@@ -20,7 +20,7 @@ import { CardComponent } from '../../shared/ui/card/card.component';
       <app-page-header
         [eyebrow]="eyebrow()"
         [title]="title()"
-        description="Esta pantalla está en construcción. La UX seguirá el prototipo NutriFlow."
+        description="Esta pantalla está en construcción. Seguimos chambeando profe c: "
       />
       <app-card>
         <div class="grid place-items-center py-16 text-center text-muted-foreground">

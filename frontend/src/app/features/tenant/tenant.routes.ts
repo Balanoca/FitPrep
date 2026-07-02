@@ -47,7 +47,11 @@ export const TENANT_ROUTES: Routes = [
         (m) => m.ClientesListComponent,
       ),
   },
-  { path: 'reports', component: PlaceholderPageComponent, data: { title: 'Reportes', eyebrow: 'Negocio' } },
+  {
+    path: 'reports',
+    loadComponent: () =>
+      import('../reportes/pages/reportes/reportes.component').then((m) => m.ReportesComponent),
+  },
   {
     path: 'settings',
     loadComponent: () =>
