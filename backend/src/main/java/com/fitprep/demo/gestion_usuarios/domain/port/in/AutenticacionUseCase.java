@@ -16,8 +16,21 @@ public interface AutenticacionUseCase {
 
     Usuario obtenerPerfilPorEmail(String email);
 
+    /** Actualiza los objetivos nutricionales del usuario identificado por email. */
+    Usuario actualizarObjetivos(String email, ActualizarObjetivosCommand command);
+
     /** Resultado de un login exitoso: token + usuario autenticado. */
     record ResultadoLogin(String token, Usuario usuario) {
+    }
+
+    /** Datos editables del perfil nutricional. */
+    record ActualizarObjetivosCommand(
+            String objetivoFitness,
+            Double requerimientoKcal,
+            Double reqProteinasG,
+            Double reqCarbohidratosG,
+            Double reqGrasasG
+    ) {
     }
 
     /** Datos necesarios para registrar un usuario, sin acoplar a DTOs web. */

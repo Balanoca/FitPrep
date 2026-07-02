@@ -26,6 +26,30 @@ public class Usuario {
         return hasher.matches(rawPassword, this.passwordHash);
     }
 
+    /**
+     * Regla de negocio: actualiza el perfil nutricional del usuario. Los
+     * requerimientos no pueden ser negativos.
+     */
+    public void actualizarObjetivos(String objetivoFitness, Double requerimientoKcal,
+                                    Double reqProteinasG, Double reqCarbohidratosG, Double reqGrasasG) {
+        validarNoNegativo(requerimientoKcal, "requerimiento calórico");
+        validarNoNegativo(reqProteinasG, "proteínas");
+        validarNoNegativo(reqCarbohidratosG, "carbohidratos");
+        validarNoNegativo(reqGrasasG, "grasas");
+
+        this.objetivoFitness = objetivoFitness;
+        this.requerimientoKcal = requerimientoKcal;
+        this.reqProteinasG = reqProteinasG;
+        this.reqCarbohidratosG = reqCarbohidratosG;
+        this.reqGrasasG = reqGrasasG;
+    }
+
+    private static void validarNoNegativo(Double valor, String campo) {
+        if (valor != null && valor < 0) {
+            throw new IllegalArgumentException("El valor de " + campo + " no puede ser negativo.");
+        }
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

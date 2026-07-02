@@ -109,4 +109,20 @@ public class AuthService implements AutenticacionUseCase {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Perfil no encontrado para el usuario: " + email));
     }
+
+    @Override
+    @Transactional
+    public Usuario actualizarObjetivos(String email, ActualizarObjetivosCommand command) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Perfil no encontrado para el usuario: " + email));
+
+        usuario.actualizarObjetivos(
+                command.objetivoFitness(),
+                command.requerimientoKcal(),
+                command.reqProteinasG(),
+                command.reqCarbohidratosG(),
+                command.reqGrasasG());
+
+        return usuarioRepository.save(usuario);
+    }
 }

@@ -10,7 +10,11 @@ export const ATHLETE_ROUTES: Routes = [
         (m) => m.AthleteDashboardComponent,
       ),
   },
-  { path: 'goals', component: PlaceholderPageComponent, data: { title: 'Objetivos', eyebrow: 'Atleta' } },
+  {
+    path: 'goals',
+    loadComponent: () =>
+      import('../perfil/pages/objetivos/objetivos.component').then((m) => m.ObjetivosComponent),
+  },
   {
     path: 'plan',
     loadComponent: () =>
@@ -27,6 +31,10 @@ export const ATHLETE_ROUTES: Routes = [
     loadComponent: () =>
       import('../planificacion/pages/mis-planes/mis-planes.component').then((m) => m.MisPlanesComponent),
   },
-  { path: 'profile', component: PlaceholderPageComponent, data: { title: 'Perfil', eyebrow: 'Atleta' } },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('../perfil/pages/perfil/perfil.component').then((m) => m.PerfilComponent),
+  },
   { path: 'settings', component: PlaceholderPageComponent, data: { title: 'Configuración', eyebrow: 'Atleta' } },
 ];

@@ -46,3 +46,12 @@ export interface RegisterNegocioRequest {
   ruc: string;
   telefono?: string | null;
 }
+
+/** Edición del perfil nutricional (PUT /auth/me). */
+export interface ActualizarObjetivosRequest {
+  objetivoFitness?: string | null;
+  requerimientoKcal?: number | null;
+  reqProteinasG?: number | null;
+  reqCarbohidratosG?: number | null;
+  reqGrasasG?: number | null;
+}

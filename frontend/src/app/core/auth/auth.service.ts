@@ -4,6 +4,7 @@ import { Observable, switchMap, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
+  ActualizarObjetivosRequest,
   AuthResponse,
   AuthUser,
   LoginRequest,
@@ -61,6 +62,13 @@ export class AuthService {
   /** Registra un negocio (tenant). No crea sesión: el usuario luego inicia sesión. */
   registrarNegocio(request: RegisterNegocioRequest): Observable<unknown> {
     return this.http.post(`${this.base}/register/negocio`, request);
+  }
+
+  /** Actualiza los objetivos nutricionales y refresca el usuario en sesión. */
+  actualizarObjetivos(request: ActualizarObjetivosRequest): Observable<AuthUser> {
+    return this.http.put<AuthUser>(`${this.base}/me`, request).pipe(
+      tap((user) => this._user.set(user)),
+    );
   }
 
   logout(): void {

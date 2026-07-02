@@ -3,6 +3,7 @@ package com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web;
 import com.fitprep.demo.gestion_usuarios.domain.model.Negocio;
 import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase;
+import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase.ActualizarObjetivosCommand;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase.RegistroNegocioCommand;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase.RegistroUsuarioCommand;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase.ResultadoLogin;
@@ -85,6 +86,27 @@ public class AuthController {
             return ResponseEntity.ok(mapToAuthResponse(usuario, null));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> actualizarMisObjetivos(@RequestBody ActualizarObjetivosRequest request) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (email == null || "anonymousUser".equals(email)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+
+        try {
+            ActualizarObjetivosCommand command = new ActualizarObjetivosCommand(
+                    request.getObjetivoFitness(),
+                    request.getRequerimientoKcal(),
+                    request.getReqProteinasG(),
+                    request.getReqCarbohidratosG(),
+                    request.getReqGrasasG());
+            Usuario actualizado = autenticacion.actualizarObjetivos(email, command);
+            return ResponseEntity.ok(mapToAuthResponse(actualizado, null));
+        } catch (IllegalArgumentException e) {
+            return errorBody("Datos no válidos", e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
