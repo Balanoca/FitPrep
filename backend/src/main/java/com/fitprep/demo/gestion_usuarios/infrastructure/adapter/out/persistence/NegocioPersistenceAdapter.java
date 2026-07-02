@@ -16,6 +16,11 @@ public class NegocioPersistenceAdapter implements NegocioRepositoryPort {
     }
 
     @Override
+    public Optional<Negocio> findById(Long id) {
+        return jpaRepository.findById(id).map(NegocioMapper::toDomain);
+    }
+
+    @Override
     public Optional<Negocio> findBySlug(String slug) {
         return jpaRepository.findBySlug(slug).map(NegocioMapper::toDomain);
     }

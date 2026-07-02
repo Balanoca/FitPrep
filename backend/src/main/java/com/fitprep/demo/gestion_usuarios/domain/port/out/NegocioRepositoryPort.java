@@ -9,6 +9,8 @@ import java.util.Optional;
  */
 public interface NegocioRepositoryPort {
 
+    Optional<Negocio> findById(Long id);
+
     Optional<Negocio> findBySlug(String slug);
 
     Negocio save(Negocio negocio);

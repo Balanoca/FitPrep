@@ -20,6 +20,19 @@ public class Negocio {
         this.fechaRegistro = LocalDateTime.now();
     }
 
+    /**
+     * Regla de negocio: actualiza los datos editables del negocio. El slug y el
+     * RUC son identificadores y no se modifican. El nombre comercial es
+     * obligatorio.
+     */
+    public void actualizarDatos(String nombreComercial, String telefono) {
+        if (nombreComercial == null || nombreComercial.isBlank()) {
+            throw new IllegalArgumentException("El nombre comercial es obligatorio.");
+        }
+        this.nombreComercial = nombreComercial.trim();
+        this.telefono = telefono;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

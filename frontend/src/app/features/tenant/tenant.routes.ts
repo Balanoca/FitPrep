@@ -48,5 +48,9 @@ export const TENANT_ROUTES: Routes = [
       ),
   },
   { path: 'reports', component: PlaceholderPageComponent, data: { title: 'Reportes', eyebrow: 'Negocio' } },
-  { path: 'settings', component: PlaceholderPageComponent, data: { title: 'Configuración', eyebrow: 'Negocio' } },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('../negocio/pages/settings/settings.component').then((m) => m.SettingsComponent),
+  },
 ];
