@@ -41,13 +41,11 @@ public class PlanSemanalTest {
                 .build();
 
         DetallePlan detalle1 = DetallePlan.builder()
-                .planSemanal(plan)
                 .plato(plato1)
                 .cantidad(1)
                 .build();
 
         DetallePlan detalle2 = DetallePlan.builder()
-                .planSemanal(plan)
                 .plato(plato2)
                 .cantidad(1)
                 .build();
@@ -85,13 +83,11 @@ public class PlanSemanalTest {
                 .build();
 
         DetallePlan detalle1 = DetallePlan.builder()
-                .planSemanal(plan)
                 .plato(plato1)
                 .cantidad(1)
                 .build();
 
         DetallePlan detalle2 = DetallePlan.builder()
-                .planSemanal(plan)
                 .plato(plato2)
                 .cantidad(1)
                 .build();

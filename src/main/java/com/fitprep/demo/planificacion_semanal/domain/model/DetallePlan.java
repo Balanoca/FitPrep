@@ -1,37 +1,53 @@
 package com.fitprep.demo.planificacion_semanal.domain.model;
 
 import com.fitprep.demo.catalogo_nutricional.domain.model.Plato;
-import jakarta.persistence.*;
-import lombok.*;
 
-@Entity
-@Table(name = "detalle_plan")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+/**
+ * Modelo de dominio puro. Una comida programada dentro de un plan semanal.
+ */
 public class DetallePlan {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_semanal_id", nullable = false)
-    private PlanSemanal planSemanal;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "plato_id", nullable = false)
     private Plato plato;
-
-    @Column(name = "dia_semana", nullable = false, length = 15)
     private String diaSemana;
-
-    @Column(name = "tipo_comida", nullable = false, length = 20)
     private String tipoComida;
+    private Integer cantidad;
 
-    @Column(name = "cantidad", nullable = false)
-    @Builder.Default
-    private Integer cantidad = 1;
+    public DetallePlan() {
+        this.cantidad = 1;
+    }
+
+    public double caloriasAportadas() {
+        if (plato == null) {
+            return 0.0;
+        }
+        return plato.caloriasPara(cantidad != null ? cantidad : 1);
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Plato getPlato() { return plato; }
+    public void setPlato(Plato plato) { this.plato = plato; }
+
+    public String getDiaSemana() { return diaSemana; }
+    public void setDiaSemana(String diaSemana) { this.diaSemana = diaSemana; }
+
+    public String getTipoComida() { return tipoComida; }
+    public void setTipoComida(String tipoComida) { this.tipoComida = tipoComida; }
+
+    public Integer getCantidad() { return cantidad; }
+    public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+        private final DetallePlan d = new DetallePlan();
+        public Builder id(Long v) { d.id = v; return this; }
+        public Builder plato(Plato v) { d.plato = v; return this; }
+        public Builder diaSemana(String v) { d.diaSemana = v; return this; }
+        public Builder tipoComida(String v) { d.tipoComida = v; return this; }
+        public Builder cantidad(Integer v) { d.cantidad = v; return this; }
+        public DetallePlan build() { return d; }
+    }
 }

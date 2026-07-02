@@ -1,0 +1,17 @@
+package com.fitprep.demo.gestion_usuarios.domain.port.out;
+
+import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
+
+import java.util.Optional;
+
+/**
+ * Puerto de salida para la persistencia de usuarios.
+ */
+public interface UsuarioRepositoryPort {
+
+    Optional<Usuario> findById(Long id);
+
+    Optional<Usuario> findByEmail(String email);
+
+    Usuario save(Usuario usuario);
+}

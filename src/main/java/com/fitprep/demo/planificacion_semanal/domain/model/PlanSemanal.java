@@ -1,53 +1,44 @@
 package com.fitprep.demo.planificacion_semanal.domain.model;
 
 import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.TenantId;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "plan_semanal")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+/**
+ * Raíz de agregado del plan semanal. Modelo de dominio puro: contiene la
+ * regla de negocio de validación de macros y no conoce JPA ni Spring.
+ */
 public class PlanSemanal {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @TenantId
-    @Column(name = "negocio_id", nullable = false)
     private Integer negocioId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
-
-    @Column(name = "fecha_inicio_semana", nullable = false)
     private LocalDate fechaInicioSemana;
-
-    @Column(name = "estado_pago", nullable = false, length = 20)
-    @Builder.Default
-    private String estadoPago = "PENDIENTE";
-
-    @Column(name = "monto_total", nullable = false)
+    private String estadoPago;
     private Double montoTotal;
+    private LocalDateTime fechaCreacion;
+    private List<DetallePlan> comidas;
 
-    @Column(name = "fecha_creacion", nullable = false)
-    @Builder.Default
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    public PlanSemanal() {
+        this.estadoPago = "PENDIENTE";
+        this.fechaCreacion = LocalDateTime.now();
+        this.comidas = new ArrayList<>();
+    }
 
-    @OneToMany(mappedBy = "planSemanal", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<DetallePlan> comidas = new ArrayList<>();
+    public void agregarComida(DetallePlan detalle) {
+        if (this.comidas == null) {
+            this.comidas = new ArrayList<>();
+        }
+        this.comidas.add(detalle);
+    }
 
+    /**
+     * Regla de negocio: la suma de calorías de las comidas no puede superar el
+     * requerimiento calórico del usuario.
+     */
     public void calcularYValidarMacros() {
         if (comidas == null || usuario == null || usuario.getRequerimientoKcal() == null) {
             return;
@@ -55,7 +46,7 @@ public class PlanSemanal {
 
         double totalCalorias = comidas.stream()
                 .filter(c -> c.getPlato() != null)
-                .mapToDouble(c -> c.getPlato().getCalorias() != null ? c.getPlato().getCalorias() * c.getCantidad() : 0.0)
+                .mapToDouble(DetallePlan::caloriasAportadas)
                 .sum();
 
         double limiteCalorias = usuario.getRequerimientoKcal();
@@ -65,5 +56,44 @@ public class PlanSemanal {
                     "El plan semanal excede el límite de calorías permitido. Límite: %.2f kcal, Consumo: %.2f kcal.",
                     limiteCalorias, totalCalorias));
         }
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Integer getNegocioId() { return negocioId; }
+    public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
+
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
+    public LocalDate getFechaInicioSemana() { return fechaInicioSemana; }
+    public void setFechaInicioSemana(LocalDate fechaInicioSemana) { this.fechaInicioSemana = fechaInicioSemana; }
+
+    public String getEstadoPago() { return estadoPago; }
+    public void setEstadoPago(String estadoPago) { this.estadoPago = estadoPago; }
+
+    public Double getMontoTotal() { return montoTotal; }
+    public void setMontoTotal(Double montoTotal) { this.montoTotal = montoTotal; }
+
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+    public List<DetallePlan> getComidas() { return comidas; }
+    public void setComidas(List<DetallePlan> comidas) { this.comidas = comidas; }
+
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+        private final PlanSemanal p = new PlanSemanal();
+        public Builder id(Long v) { p.id = v; return this; }
+        public Builder negocioId(Integer v) { p.negocioId = v; return this; }
+        public Builder usuario(Usuario v) { p.usuario = v; return this; }
+        public Builder fechaInicioSemana(LocalDate v) { p.fechaInicioSemana = v; return this; }
+        public Builder estadoPago(String v) { p.estadoPago = v; return this; }
+        public Builder montoTotal(Double v) { p.montoTotal = v; return this; }
+        public Builder fechaCreacion(LocalDateTime v) { p.fechaCreacion = v; return this; }
+        public Builder comidas(List<DetallePlan> v) { p.comidas = v; return this; }
+        public PlanSemanal build() { return p; }
     }
 }

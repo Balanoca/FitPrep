@@ -1,39 +1,57 @@
 package com.fitprep.demo.gestion_usuarios.domain.model;
 
-import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "negocio")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+/**
+ * Modelo de dominio puro del negocio (tenant del SaaS).
+ */
 public class Negocio {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "nombre_comercial", nullable = false, length = 150)
     private String nombreComercial;
-
-    @Column(name = "slug", nullable = false, unique = true, length = 50)
     private String slug;
-
-    @Column(name = "ruc", nullable = false, unique = true, length = 11)
     private String ruc;
-
-    @Column(name = "telefono", length = 15)
     private String telefono;
+    private String estado;
+    private LocalDateTime fechaRegistro;
 
-    @Column(name = "estado", nullable = false, length = 20)
-    @Builder.Default
-    private String estado = "ACTIVO";
+    public Negocio() {
+        this.estado = "ACTIVO";
+        this.fechaRegistro = LocalDateTime.now();
+    }
 
-    @Column(name = "fecha_registro", nullable = false)
-    @Builder.Default
-    private LocalDateTime fechaRegistro = LocalDateTime.now();
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getNombreComercial() { return nombreComercial; }
+    public void setNombreComercial(String nombreComercial) { this.nombreComercial = nombreComercial; }
+
+    public String getSlug() { return slug; }
+    public void setSlug(String slug) { this.slug = slug; }
+
+    public String getRuc() { return ruc; }
+    public void setRuc(String ruc) { this.ruc = ruc; }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public LocalDateTime getFechaRegistro() { return fechaRegistro; }
+    public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+        private final Negocio n = new Negocio();
+        public Builder id(Long v) { n.id = v; return this; }
+        public Builder nombreComercial(String v) { n.nombreComercial = v; return this; }
+        public Builder slug(String v) { n.slug = v; return this; }
+        public Builder ruc(String v) { n.ruc = v; return this; }
+        public Builder telefono(String v) { n.telefono = v; return this; }
+        public Builder estado(String v) { n.estado = v; return this; }
+        public Builder fechaRegistro(LocalDateTime v) { n.fechaRegistro = v; return this; }
+        public Negocio build() { return n; }
+    }
 }

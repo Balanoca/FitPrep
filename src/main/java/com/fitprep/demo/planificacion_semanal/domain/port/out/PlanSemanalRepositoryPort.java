@@ -1,0 +1,19 @@
+package com.fitprep.demo.planificacion_semanal.domain.port.out;
+
+import com.fitprep.demo.planificacion_semanal.domain.model.PlanSemanal;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Puerto de salida para la persistencia de planes semanales.
+ */
+public interface PlanSemanalRepositoryPort {
+
+    PlanSemanal save(PlanSemanal plan);
+
+    Optional<PlanSemanal> findById(Long id);
+
+    List<PlanSemanal> findByFechaInicioSemanaAndEstadoPagoIn(LocalDate fecha, List<String> estadosPago);
+}

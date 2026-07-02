@@ -1,54 +1,83 @@
 package com.fitprep.demo.gestion_usuarios.domain.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.TenantId;
-
-@Entity
-@Table(name = "usuario")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+/**
+ * Modelo de dominio puro del usuario (deportista / administrador de tenant).
+ */
 public class Usuario {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @TenantId
-    @Column(name = "negocio_id", nullable = false)
     private Integer negocioId;
-
-    @Column(name = "nombres", nullable = false, length = 100)
     private String nombres;
-
-    @Column(name = "apellidos", nullable = false, length = 100)
     private String apellidos;
-
-    @Column(name = "email", nullable = false, unique = true, length = 150)
     private String email;
-
-    @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
-
-    @Column(name = "rol", nullable = false, length = 20)
-    @Builder.Default
-    private String rol = "ATHLETE";
-
-    @Column(name = "objetivo_fitness", length = 50)
+    private String rol;
     private String objetivoFitness;
-
-    @Column(name = "requerimiento_kcal")
     private Double requerimientoKcal;
-
-    @Column(name = "req_proteinas_g")
     private Double reqProteinasG;
-
-    @Column(name = "req_carbohidratos_g")
     private Double reqCarbohidratosG;
-
-    @Column(name = "req_grasas_g")
     private Double reqGrasasG;
+
+    public Usuario() {
+        this.rol = "ATHLETE";
+    }
+
+    public boolean passwordCoincide(String rawPassword, PasswordHasher hasher) {
+        return hasher.matches(rawPassword, this.passwordHash);
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Integer getNegocioId() { return negocioId; }
+    public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
+
+    public String getNombres() { return nombres; }
+    public void setNombres(String nombres) { this.nombres = nombres; }
+
+    public String getApellidos() { return apellidos; }
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
+
+    public String getObjetivoFitness() { return objetivoFitness; }
+    public void setObjetivoFitness(String objetivoFitness) { this.objetivoFitness = objetivoFitness; }
+
+    public Double getRequerimientoKcal() { return requerimientoKcal; }
+    public void setRequerimientoKcal(Double requerimientoKcal) { this.requerimientoKcal = requerimientoKcal; }
+
+    public Double getReqProteinasG() { return reqProteinasG; }
+    public void setReqProteinasG(Double reqProteinasG) { this.reqProteinasG = reqProteinasG; }
+
+    public Double getReqCarbohidratosG() { return reqCarbohidratosG; }
+    public void setReqCarbohidratosG(Double reqCarbohidratosG) { this.reqCarbohidratosG = reqCarbohidratosG; }
+
+    public Double getReqGrasasG() { return reqGrasasG; }
+    public void setReqGrasasG(Double reqGrasasG) { this.reqGrasasG = reqGrasasG; }
+
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+        private final Usuario u = new Usuario();
+        public Builder id(Long v) { u.id = v; return this; }
+        public Builder negocioId(Integer v) { u.negocioId = v; return this; }
+        public Builder nombres(String v) { u.nombres = v; return this; }
+        public Builder apellidos(String v) { u.apellidos = v; return this; }
+        public Builder email(String v) { u.email = v; return this; }
+        public Builder passwordHash(String v) { u.passwordHash = v; return this; }
+        public Builder rol(String v) { u.rol = v; return this; }
+        public Builder objetivoFitness(String v) { u.objetivoFitness = v; return this; }
+        public Builder requerimientoKcal(Double v) { u.requerimientoKcal = v; return this; }
+        public Builder reqProteinasG(Double v) { u.reqProteinasG = v; return this; }
+        public Builder reqCarbohidratosG(Double v) { u.reqCarbohidratosG = v; return this; }
+        public Builder reqGrasasG(Double v) { u.reqGrasasG = v; return this; }
+        public Usuario build() { return u; }
+    }
 }
