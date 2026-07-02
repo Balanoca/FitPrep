@@ -96,6 +96,45 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-* {
+// Resets mínimos que aportaba Preflight (desactivado por Material). No tocan
+// los componentes de Material, solo dan base a las utilidades de Tailwind.
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   border-color: var(--border);
+}
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+button {
+  background: none;
+  cursor: pointer;
+}
+
+// Enlaces sin color/subrayado por defecto: heredan el estilo del contenedor,
+// como hacía Preflight. Las clases de Tailwind (text-brand-600, etc.) siguen mandando.
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+// Listas sin viñetas ni sangría por defecto (el sidebar usa <ul>).
+ol, ul, menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+// Imágenes/medios como bloque, evita huecos por su baseline.
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  vertical-align: middle;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
 }

@@ -2,6 +2,12 @@
 module.exports = {
   darkMode: 'class',
   content: ['./src/**/*.{html,ts}'],
+  // Desactiva el reset "Preflight" de Tailwind: rompe el layout interno de los
+  // componentes de Angular Material (labels y bordes de mat-form-field).
+  // Material trae su propio reset; el nuestro vive en styles.scss.
+  corePlugins: {
+    preflight: false,
+  },
   theme: {
     extend: {
       fontFamily: {
