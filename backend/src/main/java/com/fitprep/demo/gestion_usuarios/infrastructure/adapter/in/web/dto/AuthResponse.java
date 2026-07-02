@@ -15,4 +15,9 @@ public class AuthResponse {
     private String apellidos;
     private String email;
     private String rol;
+    private String objetivoFitness;
+    private Double requerimientoKcal;
+    private Double reqProteinasG;
+    private Double reqCarbohidratosG;
+    private Double reqGrasasG;
 }

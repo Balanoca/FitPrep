@@ -7,6 +7,7 @@ import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase.Reg
 import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase.RegistroUsuarioCommand;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase.ResultadoLogin;
 import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.*;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -96,6 +97,11 @@ public class AuthController {
                 .apellidos(usuario.getApellidos())
                 .email(usuario.getEmail())
                 .rol(usuario.getRol())
+                .objetivoFitness(usuario.getObjetivoFitness())
+                .requerimientoKcal(usuario.getRequerimientoKcal())
+                .reqProteinasG(usuario.getReqProteinasG())
+                .reqCarbohidratosG(usuario.getReqCarbohidratosG())
+                .reqGrasasG(usuario.getReqGrasasG())
                 .build();
     }
 
@@ -109,6 +115,18 @@ public class AuthController {
                 .estado(negocio.getEstado())
                 .fechaRegistro(negocio.getFechaRegistro())
                 .build();
+    }
+
+    /**
+     * Violaciones de integridad (RUC/slug/email duplicado o dato demasiado largo)
+     * se traducen a 409 con un mensaje legible en vez de un 500 genérico.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException ex) {
+        return errorBody(
+                "Datos en conflicto",
+                "El registro no se pudo completar: es posible que algún dato único (RUC, slug o email) ya exista o no sea válido.",
+                HttpStatus.CONFLICT);
     }
 
     private ResponseEntity<Map<String, Object>> errorBody(String error, String message, HttpStatus status) {
