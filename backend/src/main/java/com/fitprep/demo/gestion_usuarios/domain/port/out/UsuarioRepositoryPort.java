@@ -2,6 +2,7 @@ package com.fitprep.demo.gestion_usuarios.domain.port.out;
 
 import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,6 +13,9 @@ public interface UsuarioRepositoryPort {
     Optional<Usuario> findById(Long id);
 
     Optional<Usuario> findByEmail(String email);
+
+    /** Usuarios con el rol dado, del tenant activo. */
+    List<Usuario> findByRol(String rol);
 
     Usuario save(Usuario usuario);
 }

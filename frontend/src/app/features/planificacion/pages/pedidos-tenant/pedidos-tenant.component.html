@@ -1,0 +1,100 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Negocio · Operación"
+    title="Pedidos"
+    description="Todos los pedidos de tus clientes. Confírmalos para que entren a producción."
+  />
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else {
+    <!-- KPIs -->
+    <div class="grid sm:grid-cols-3 gap-5 mb-6">
+      <app-kpi-card label="Ingresos (pagados)" [value]="(totalIngresos() | currency: 'USD') ?? '—'" />
+      <app-kpi-card label="Pendientes" [value]="pendientes().toString()" hint="por confirmar" />
+      <app-kpi-card label="Confirmados" [value]="confirmados().toString()" hint="en producción" />
+    </div>
+
+    <app-card padding="p-0">
+      <!-- Filtros por estado -->
+      <div class="p-4 border-b border-border flex flex-wrap items-center gap-2">
+        @for (f of filtros; track f) {
+          <button
+            (click)="estado.set(f)"
+            class="px-3 h-8 rounded-md text-xs font-medium transition-colors"
+            [class]="estado() === f ? 'bg-foreground text-background' : 'border border-border hover:bg-muted'"
+          >
+            {{ f === 'TODOS' ? 'Todos' : f }}
+          </button>
+        }
+      </div>
+
+      @if (filtrados().length === 0) {
+        <div class="grid place-items-center py-16 text-center text-muted-foreground">
+          <mat-icon class="!size-10 !text-[40px] mb-2 opacity-40">receipt_long</mat-icon>
+          <div class="text-sm">No hay pedidos que coincidan.</div>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-surface text-[10px] uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th class="text-left px-5 py-3">Pedido</th>
+                <th class="text-left px-5 py-3">Cliente</th>
+                <th class="text-left px-5 py-3">Semana</th>
+                <th class="text-right px-5 py-3">Comidas</th>
+                <th class="text-right px-5 py-3">Monto</th>
+                <th class="text-left px-5 py-3">Estado</th>
+                <th class="w-12"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (p of filtrados(); track p.id) {
+                <tr class="hover:bg-muted/40">
+                  <td class="px-5 py-3 font-medium">#{{ p.id }}</td>
+                  <td class="px-5 py-3">{{ p.usuarioNombre || '—' }}</td>
+                  <td class="px-5 py-3 text-muted-foreground text-xs">
+                    {{ p.fechaInicioSemana | date: 'longDate' }}
+                  </td>
+                  <td class="px-5 py-3 text-right tabular-nums">{{ totalComidas(p) }}</td>
+                  <td class="px-5 py-3 text-right tabular-nums font-medium">{{ p.montoTotal | currency: 'USD' }}</td>
+                  <td class="px-5 py-3">
+                    <app-badge [tone]="tono(p.estadoPago)">{{ p.estadoPago }}</app-badge>
+                  </td>
+                  <td class="px-5 py-3">
+                    @if (actualizando() === p.id) {
+                      <mat-progress-spinner diameter="22" mode="indeterminate" />
+                    } @else if (!esTerminal(p.estadoPago)) {
+                      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        @if (p.estadoPago === 'PENDIENTE') {
+                          <button mat-menu-item (click)="cambiar(p, 'CONFIRMADO')">
+                            <mat-icon>check_circle</mat-icon> Confirmar
+                          </button>
+                        }
+                        @if (p.estadoPago === 'CONFIRMADO') {
+                          <button mat-menu-item (click)="cambiar(p, 'PAGADO')">
+                            <mat-icon>payments</mat-icon> Marcar pagado
+                          </button>
+                        }
+                        <button mat-menu-item (click)="cambiar(p, 'CANCELADO')">
+                          <mat-icon>cancel</mat-icon> Cancelar
+                        </button>
+                      </mat-menu>
+                    } @else {
+                      <mat-icon class="text-muted-foreground opacity-50 !size-4 !text-[18px]">lock</mat-icon>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </app-card>
+  }
+</div>

@@ -4,7 +4,9 @@ import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
 import com.fitprep.demo.gestion_usuarios.domain.port.out.UsuarioRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class UsuarioPersistenceAdapter implements UsuarioRepositoryPort {
@@ -23,6 +25,13 @@ public class UsuarioPersistenceAdapter implements UsuarioRepositoryPort {
     @Override
     public Optional<Usuario> findByEmail(String email) {
         return jpaRepository.findByEmail(email).map(UsuarioMapper::toDomain);
+    }
+
+    @Override
+    public List<Usuario> findByRol(String rol) {
+        return jpaRepository.findByRolOrderByNombresAsc(rol).stream()
+                .map(UsuarioMapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override

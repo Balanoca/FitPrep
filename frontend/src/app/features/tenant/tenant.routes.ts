@@ -10,7 +10,13 @@ export const TENANT_ROUTES: Routes = [
         (m) => m.TenantDashboardComponent,
       ),
   },
-  { path: 'orders', component: PlaceholderPageComponent, data: { title: 'Pedidos semanales', eyebrow: 'Operación' } },
+  {
+    path: 'orders',
+    loadComponent: () =>
+      import('../planificacion/pages/pedidos-tenant/pedidos-tenant.component').then(
+        (m) => m.PedidosTenantComponent,
+      ),
+  },
   {
     path: 'production',
     loadComponent: () =>
@@ -34,7 +40,13 @@ export const TENANT_ROUTES: Routes = [
       import('../catalogo/pages/plato-form/plato-form.component').then((m) => m.PlatoFormComponent),
   },
   { path: 'ingredients', component: PlaceholderPageComponent, data: { title: 'Ingredientes', eyebrow: 'Catálogo' } },
-  { path: 'clients', component: PlaceholderPageComponent, data: { title: 'Clientes', eyebrow: 'Negocio' } },
+  {
+    path: 'clients',
+    loadComponent: () =>
+      import('../clientes/pages/clientes-list/clientes-list.component').then(
+        (m) => m.ClientesListComponent,
+      ),
+  },
   { path: 'reports', component: PlaceholderPageComponent, data: { title: 'Reportes', eyebrow: 'Negocio' } },
   { path: 'settings', component: PlaceholderPageComponent, data: { title: 'Configuración', eyebrow: 'Negocio' } },
 ];

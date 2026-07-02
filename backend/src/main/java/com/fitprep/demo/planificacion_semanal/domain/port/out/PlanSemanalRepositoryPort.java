@@ -17,5 +17,8 @@ public interface PlanSemanalRepositoryPort {
 
     List<PlanSemanal> findByUsuarioId(Long usuarioId);
 
+    /** Todos los planes del tenant activo (Hibernate filtra por @TenantId). */
+    List<PlanSemanal> findAllPlanes();
+
     List<PlanSemanal> findByFechaInicioSemanaAndEstadoPagoIn(LocalDate fecha, List<String> estadosPago);
 }

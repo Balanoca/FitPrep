@@ -19,6 +19,7 @@ export interface ComidaProgramada {
 export interface PlanSemanal {
   id: number | null;
   usuarioId: number | null;
+  usuarioNombre?: string | null;
   fechaInicioSemana: string; // ISO yyyy-MM-dd
   estadoPago: string;
   montoTotal: number;

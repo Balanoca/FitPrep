@@ -79,6 +79,11 @@ public class PlanSemanalService implements GestionarPlanSemanalUseCase {
     }
 
     @Override
+    public List<PlanSemanal> listarTodosLosPlanes() {
+        return planSemanalRepository.findAllPlanes();
+    }
+
+    @Override
     @Transactional
     public PlanSemanal cambiarEstadoPago(Long planId, String nuevoEstado) {
         PlanSemanal plan = planSemanalRepository.findById(planId)

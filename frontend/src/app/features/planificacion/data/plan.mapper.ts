@@ -28,6 +28,7 @@ export const PlanMapper = {
     return {
       id: dto.id,
       usuarioId: dto.usuarioId,
+      usuarioNombre: dto.usuarioNombre,
       fechaInicioSemana: dto.fechaInicioSemana,
       estadoPago: dto.estadoPago,
       montoTotal: dto.montoTotal,

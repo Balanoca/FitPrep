@@ -17,6 +17,7 @@ export interface PlanSemanalResponseDto {
   id: number;
   negocioId: number;
   usuarioId: number;
+  usuarioNombre: string | null;
   fechaInicioSemana: string;
   estadoPago: string;
   montoTotal: number;

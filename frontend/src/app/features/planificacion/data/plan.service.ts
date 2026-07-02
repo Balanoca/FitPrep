@@ -45,6 +45,19 @@ export class PlanService {
     );
   }
 
+  /** Todos los pedidos del negocio (solo TENANT/ADMIN). */
+  listarTodos(): Observable<PlanSemanal[]> {
+    return forkJoin({
+      dtos: this.http.get<PlanSemanalResponseDto[]>(this.base),
+      platos: this.platoService.listar(),
+    }).pipe(
+      map(({ dtos, platos }) => {
+        const idx = indexar(platos);
+        return dtos.map((dto) => PlanMapper.toModel(dto, idx));
+      }),
+    );
+  }
+
   /** Cambia el estado de pago de un plan (CONFIRMADO, PAGADO, CANCELADO). */
   cambiarEstado(planId: number, estadoPago: string): Observable<PlanSemanal> {
     return forkJoin({

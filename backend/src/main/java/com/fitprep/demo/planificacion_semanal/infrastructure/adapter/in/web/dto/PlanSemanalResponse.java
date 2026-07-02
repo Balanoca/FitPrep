@@ -13,6 +13,7 @@ public class PlanSemanalResponse {
     private Long id;
     private Integer negocioId;
     private Long usuarioId;
+    private String usuarioNombre;
     private LocalDate fechaInicioSemana;
     private String estadoPago;
     private Double montoTotal;

@@ -47,7 +47,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")
+                // Listar TODOS los pedidos del negocio: solo TENANT/ADMIN.
+                .requestMatchers(HttpMethod.GET, "/api/v1/planes").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers("/api/v1/planes/**").authenticated()
+                .requestMatchers("/api/v1/usuarios/**").hasAnyRole("TENANT", "ADMIN")
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

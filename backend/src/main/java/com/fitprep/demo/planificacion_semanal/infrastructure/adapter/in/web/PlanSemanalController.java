@@ -66,6 +66,15 @@ public class PlanSemanalController {
         }
     }
 
+    /** Todos los pedidos del negocio (solo TENANT/ADMIN, filtrado por tenant). */
+    @GetMapping
+    public ResponseEntity<List<PlanSemanalResponse>> listarPedidosDelNegocio() {
+        List<PlanSemanalResponse> planes = gestionarPlan.listarTodosLosPlanes().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(planes);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PlanSemanalResponse> obtenerPlan(@PathVariable Long id) {
         return gestionarPlan.obtenerPlanPorId(id)
@@ -118,11 +127,22 @@ public class PlanSemanalController {
                 .id(plan.getId())
                 .negocioId(plan.getNegocioId())
                 .usuarioId(plan.getUsuario() != null ? plan.getUsuario().getId() : null)
+                .usuarioNombre(nombreCompleto(plan))
                 .fechaInicioSemana(plan.getFechaInicioSemana())
                 .estadoPago(plan.getEstadoPago())
                 .montoTotal(plan.getMontoTotal())
                 .comidas(comidas)
                 .build();
+    }
+
+    private String nombreCompleto(PlanSemanal plan) {
+        Usuario u = plan.getUsuario();
+        if (u == null) {
+            return null;
+        }
+        return (u.getNombres() != null ? u.getNombres() : "")
+                + " "
+                + (u.getApellidos() != null ? u.getApellidos() : "");
     }
 
     private ComidaProgramadaDTO mapComida(DetallePlan detalle) {

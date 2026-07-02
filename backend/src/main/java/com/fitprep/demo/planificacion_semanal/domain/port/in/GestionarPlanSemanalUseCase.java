@@ -18,6 +18,9 @@ public interface GestionarPlanSemanalUseCase {
     /** Planes de un usuario, del más reciente al más antiguo. */
     List<PlanSemanal> listarPlanesDeUsuario(Long usuarioId);
 
+    /** Todos los planes del negocio activo (filtrado por tenant). */
+    List<PlanSemanal> listarTodosLosPlanes();
+
     /** Cambia el estado de pago de un plan (confirmar, pagar, cancelar). */
     PlanSemanal cambiarEstadoPago(Long planId, String nuevoEstado);
 

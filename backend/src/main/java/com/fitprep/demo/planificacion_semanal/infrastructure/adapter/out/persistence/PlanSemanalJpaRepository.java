@@ -9,4 +9,6 @@ interface PlanSemanalJpaRepository extends JpaRepository<PlanSemanalEntity, Long
     List<PlanSemanalEntity> findByFechaInicioSemanaAndEstadoPagoIn(LocalDate fecha, List<String> estadosPago);
 
     List<PlanSemanalEntity> findByUsuarioIdOrderByIdDesc(Long usuarioId);
+
+    List<PlanSemanalEntity> findAllByOrderByIdDesc();
 }
