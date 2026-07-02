@@ -1,0 +1,69 @@
+<div class="p-8 max-w-2xl">
+  <app-page-header
+    eyebrow="Cuenta"
+    title="Mis objetivos"
+    description="Ajusta tu requerimiento calórico y tus macros. Se usarán para validar tus planes semanales."
+  >
+    <a actions routerLink="/athlete/profile" mat-stroked-button>Cancelar</a>
+    <button
+      actions
+      mat-flat-button
+      color="primary"
+      type="submit"
+      form="objetivosForm"
+      [disabled]="saving()"
+    >
+      @if (saving()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" />
+      } @else {
+        Guardar objetivos
+      }
+    </button>
+  </app-page-header>
+
+  <form id="objetivosForm" [formGroup]="form" (ngSubmit)="guardar()">
+    <app-card class="mb-6">
+      <h3 class="text-sm font-semibold mb-4">Objetivo general</h3>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>¿Cuál es tu meta?</mat-label>
+        <mat-select formControlName="objetivoFitness">
+          @for (o of objetivosFitness; track o.value) {
+            <mat-option [value]="o.value">{{ o.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </app-card>
+
+    <app-card>
+      <h3 class="text-sm font-semibold mb-4">Requerimientos diarios</h3>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Calorías</mat-label>
+          <input matInput type="number" formControlName="requerimientoKcal" placeholder="2200" />
+          <span matTextSuffix>kcal</span>
+          @if (form.controls.requerimientoKcal.hasError('min')) {
+            <mat-error>No puede ser negativo</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Proteína</mat-label>
+          <input matInput type="number" formControlName="reqProteinasG" placeholder="165" />
+          <span matTextSuffix>g</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Carbohidratos</mat-label>
+          <input matInput type="number" formControlName="reqCarbohidratosG" placeholder="220" />
+          <span matTextSuffix>g</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Grasas</mat-label>
+          <input matInput type="number" formControlName="reqGrasasG" placeholder="60" />
+          <span matTextSuffix>g</span>
+        </mat-form-field>
+      </div>
+      <p class="text-xs text-muted-foreground mt-3">
+        Al planificar tu semana, el sistema avisa si superas tu requerimiento calórico.
+      </p>
+    </app-card>
+  </form>
+</div>

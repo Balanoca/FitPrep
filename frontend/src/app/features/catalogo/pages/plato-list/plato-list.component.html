@@ -1,0 +1,103 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Catálogo"
+    title="Catálogo de comidas"
+    [description]="platos().length + ' platos registrados'"
+  >
+    <a actions routerLink="/tenant/meals/new" mat-flat-button color="primary">
+      <mat-icon>add</mat-icon> Nueva comida
+    </a>
+  </app-page-header>
+
+  <app-card padding="p-0">
+    <!-- Barra de filtros -->
+    <div class="p-4 border-b border-border flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2 px-3 h-9 rounded-md bg-muted text-sm flex-1 min-w-[200px] max-w-md">
+        <mat-icon class="!size-4 !text-[18px] text-muted-foreground">search</mat-icon>
+        <input
+          class="bg-transparent flex-1 outline-none"
+          placeholder="Buscar comida..."
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+        />
+      </div>
+      @for (f of filtros; track f.key) {
+        <button
+          (click)="setEstado(f.key)"
+          class="px-3 h-8 rounded-md text-xs font-medium transition-colors"
+          [class]="estado() === f.key ? 'bg-foreground text-background' : 'border border-border hover:bg-muted'"
+        >
+          {{ f.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Estados -->
+    @if (loading()) {
+      <div class="grid place-items-center py-20">
+        <mat-progress-spinner diameter="36" mode="indeterminate" />
+      </div>
+    } @else if (platosFiltrados().length === 0) {
+      <div class="grid place-items-center py-20 text-center text-muted-foreground">
+        <mat-icon class="!size-10 !text-[40px] mb-2 opacity-40">restaurant</mat-icon>
+        <div class="text-sm">No hay platos que coincidan.</div>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-surface text-[10px] uppercase tracking-widest text-muted-foreground">
+            <tr>
+              <th class="text-left px-5 py-3 w-12"></th>
+              <th class="text-left px-5 py-3">Nombre</th>
+              <th class="text-right px-5 py-3">Kcal</th>
+              <th class="text-right px-5 py-3">Proteína</th>
+              <th class="text-right px-5 py-3">Precio</th>
+              <th class="text-left px-5 py-3">Estado</th>
+              <th class="w-12"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (p of platosFiltrados(); track p.id) {
+              <tr class="hover:bg-muted/40">
+                <td class="px-5 py-3">
+                  <div class="size-9 rounded-lg bg-gradient-to-br from-brand-100 to-brand-50"></div>
+                </td>
+                <td class="px-5 py-3">
+                  <a [routerLink]="['/tenant/meals', p.id, 'edit']" class="font-medium hover:text-brand-600">
+                    {{ p.nombre }}
+                  </a>
+                  @if (p.descripcion) {
+                    <div class="text-xs text-muted-foreground truncate max-w-xs">{{ p.descripcion }}</div>
+                  }
+                </td>
+                <td class="px-5 py-3 text-right tabular-nums">{{ p.calorias }}</td>
+                <td class="px-5 py-3 text-right tabular-nums text-muted-foreground">{{ p.proteinas }}g</td>
+                <td class="px-5 py-3 text-right tabular-nums font-medium">{{ p.precio | currency: 'USD' }}</td>
+                <td class="px-5 py-3">
+                  @if (p.disponible) {
+                    <app-badge tone="brand">Disponible</app-badge>
+                  } @else {
+                    <app-badge tone="rose">No disponible</app-badge>
+                  }
+                </td>
+                <td class="px-5 py-3">
+                  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    <a mat-menu-item [routerLink]="['/tenant/meals', p.id, 'edit']">
+                      <mat-icon>edit</mat-icon> Editar
+                    </a>
+                    <button mat-menu-item (click)="eliminar(p)">
+                      <mat-icon>delete</mat-icon> Eliminar
+                    </button>
+                  </mat-menu>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </app-card>
+</div>

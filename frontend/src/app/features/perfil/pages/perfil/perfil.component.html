@@ -1,0 +1,92 @@
+<div class="p-8 max-w-3xl">
+  <app-page-header eyebrow="Cuenta" title="Mi perfil" description="Tus datos personales y de la cuenta.">
+    @if (esAtleta()) {
+      <a actions routerLink="/athlete/goals" mat-stroked-button>
+        <mat-icon>edit</mat-icon> Editar objetivos
+      </a>
+    }
+  </app-page-header>
+
+  @if (user(); as u) {
+    <!-- Cabecera de identidad -->
+    <app-card class="mb-6">
+      <div class="flex items-center gap-4">
+        <div class="size-16 rounded-2xl bg-brand-100 grid place-items-center text-xl font-semibold text-brand-700">
+          {{ initials() }}
+        </div>
+        <div class="min-w-0">
+          <div class="text-lg font-semibold">{{ u.nombres }} {{ u.apellidos }}</div>
+          <div class="text-sm text-muted-foreground">{{ u.email }}</div>
+          <div class="mt-1 inline-flex items-center gap-1.5 rounded-full bg-brand-50 text-brand-700 px-2 py-0.5 text-[11px] font-semibold">
+            {{ rolLabel() }}
+          </div>
+        </div>
+      </div>
+    </app-card>
+
+    <!-- Datos de la cuenta -->
+    <app-card class="mb-6">
+      <h3 class="text-sm font-semibold mb-4">Datos de la cuenta</h3>
+      <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+        <div>
+          <dt class="text-xs text-muted-foreground mb-0.5">Nombres</dt>
+          <dd class="font-medium">{{ u.nombres }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted-foreground mb-0.5">Apellidos</dt>
+          <dd class="font-medium">{{ u.apellidos }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted-foreground mb-0.5">Correo</dt>
+          <dd class="font-medium">{{ u.email }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted-foreground mb-0.5">Rol</dt>
+          <dd class="font-medium">{{ rolLabel() }}</dd>
+        </div>
+      </dl>
+    </app-card>
+
+    <!-- Objetivos nutricionales (solo atleta) -->
+    @if (esAtleta()) {
+      <app-card>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold">Objetivos nutricionales</h3>
+          <a routerLink="/athlete/goals" class="text-xs text-brand-600 font-medium">Editar →</a>
+        </div>
+
+        @if (u.requerimientoKcal != null) {
+          <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+            <div>
+              <dt class="text-xs text-muted-foreground mb-0.5">Calorías</dt>
+              <dd class="font-semibold tabular-nums">{{ u.requerimientoKcal }} kcal</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground mb-0.5">Proteína</dt>
+              <dd class="font-semibold tabular-nums">{{ u.reqProteinasG ?? '—' }}g</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground mb-0.5">Carbohidratos</dt>
+              <dd class="font-semibold tabular-nums">{{ u.reqCarbohidratosG ?? '—' }}g</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground mb-0.5">Grasas</dt>
+              <dd class="font-semibold tabular-nums">{{ u.reqGrasasG ?? '—' }}g</dd>
+            </div>
+          </dl>
+          @if (u.objetivoFitness) {
+            <div class="mt-4 pt-4 border-t border-border text-sm">
+              <span class="text-muted-foreground">Objetivo: </span>
+              <span class="font-medium">{{ u.objetivoFitness }}</span>
+            </div>
+          }
+        } @else {
+          <div class="text-sm text-muted-foreground">
+            Aún no has definido tus objetivos.
+            <a routerLink="/athlete/goals" class="text-brand-600 font-medium">Configúralos aquí →</a>
+          </div>
+        }
+      </app-card>
+    }
+  }
+</div>

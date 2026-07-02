@@ -1,0 +1,73 @@
+<div class="p-8 max-w-2xl">
+  <app-page-header
+    eyebrow="Negocio"
+    title="Configuración"
+    description="Gestiona los datos de tu negocio."
+  >
+    <button
+      actions
+      mat-flat-button
+      color="primary"
+      type="submit"
+      form="settingsForm"
+      [disabled]="saving() || loading()"
+    >
+      @if (saving()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" />
+      } @else {
+        Guardar cambios
+      }
+    </button>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else if (negocio(); as n) {
+    <form id="settingsForm" [formGroup]="form" (ngSubmit)="guardar()">
+      <!-- Datos editables -->
+      <app-card class="mb-6">
+        <h3 class="text-sm font-semibold mb-4">Datos del negocio</h3>
+        <div class="space-y-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Nombre comercial</mat-label>
+            <input matInput formControlName="nombreComercial" />
+            @if (form.controls.nombreComercial.hasError('required') && form.controls.nombreComercial.touched) {
+              <mat-error>El nombre comercial es obligatorio</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full sm:w-1/2">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telefono" placeholder="999888777" />
+          </mat-form-field>
+        </div>
+      </app-card>
+
+      <!-- Datos de solo lectura (identificadores) -->
+      <app-card>
+        <h3 class="text-sm font-semibold mb-1">Identificadores</h3>
+        <p class="text-xs text-muted-foreground mb-4">Estos datos no se pueden modificar.</p>
+        <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+          <div>
+            <dt class="text-xs text-muted-foreground mb-0.5">Slug</dt>
+            <dd class="font-mono">{{ n.slug }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-muted-foreground mb-0.5">RUC</dt>
+            <dd class="font-mono">{{ n.ruc }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-muted-foreground mb-0.5">Estado</dt>
+            <dd class="font-medium">{{ n.estado }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-muted-foreground mb-0.5">Registrado</dt>
+            <dd class="font-medium">{{ n.fechaRegistro | date: 'longDate' }}</dd>
+          </div>
+        </dl>
+      </app-card>
+    </form>
+  }
+</div>

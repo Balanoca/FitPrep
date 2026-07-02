@@ -1,0 +1,146 @@
+<div class="min-h-screen grid lg:grid-cols-2 bg-background">
+  <!-- Panel de marca -->
+  <div class="hidden lg:flex flex-col justify-between p-12 bg-brand-950 text-white relative overflow-hidden">
+    <div class="flex items-center gap-2.5">
+      <div class="size-10 rounded-xl bg-brand-500 grid place-items-center">
+        <mat-icon class="text-white">restaurant</mat-icon>
+      </div>
+      <span class="text-lg font-semibold tracking-tight">FitPrep</span>
+    </div>
+    <div class="max-w-md">
+      <h2 class="text-3xl font-semibold tracking-tight leading-tight">
+        Crea tu cuenta en menos de un minuto.
+      </h2>
+      <p class="mt-4 text-sm text-white/70">
+        Empieza gratis. Registra tu perfil de atleta o tu negocio de comida fit.
+      </p>
+    </div>
+    <div class="text-xs text-white/40">© 2026 FitPrep · SaaS multi-tenant</div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="flex items-center justify-center p-6 sm:p-12 overflow-y-auto">
+    <div class="w-full max-w-sm py-6">
+      <div class="mb-6">
+        <div class="text-[11px] font-semibold uppercase tracking-widest text-brand-600 mb-1.5">
+          Bienvenido
+        </div>
+        <h1 class="text-2xl font-semibold tracking-tight">Crea tu cuenta</h1>
+      </div>
+
+      <!-- Switcher atleta / negocio -->
+      <mat-button-toggle-group
+        class="w-full mb-6"
+        [value]="modo()"
+        (change)="setModo($event.value)"
+      >
+        <mat-button-toggle value="atleta" class="flex-1">Soy atleta</mat-button-toggle>
+        <mat-button-toggle value="negocio" class="flex-1">Tengo un negocio</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      @if (error()) {
+        <div class="mb-4 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {{ error() }}
+        </div>
+      }
+
+      @if (modo() === 'atleta') {
+        <!-- Registro de atleta -->
+        <form [formGroup]="atletaForm" (ngSubmit)="registrarAtleta()" class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombres" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Apellido</mat-label>
+              <input matInput formControlName="apellidos" />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput type="email" formControlName="email" />
+            @if (atletaForm.controls.email.hasError('email')) {
+              <mat-error>Correo no válido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
+            @if (atletaForm.controls.password.hasError('minlength')) {
+              <mat-error>Mínimo 6 caracteres</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="grid grid-cols-2 gap-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Objetivo</mat-label>
+              <mat-select formControlName="objetivoFitness">
+                @for (o of objetivos; track o.value) {
+                  <mat-option [value]="o.value">{{ o.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Kcal objetivo</mat-label>
+              <input matInput type="number" formControlName="requerimientoKcal" placeholder="2200" />
+            </mat-form-field>
+          </div>
+
+          <button mat-flat-button color="primary" type="submit" class="w-full !h-11" [disabled]="loading()">
+            @if (loading()) {
+              <mat-progress-spinner diameter="20" mode="indeterminate" />
+            } @else {
+              Crear cuenta de atleta
+            }
+          </button>
+        </form>
+      } @else {
+        <!-- Registro de negocio -->
+        <form [formGroup]="negocioForm" (ngSubmit)="registrarNegocio()" class="space-y-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Nombre comercial</mat-label>
+            <input matInput formControlName="nombreComercial" placeholder="FitKitchen" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Slug (identificador)</mat-label>
+            <input matInput formControlName="slug" placeholder="fitkitchen" />
+            <mat-hint>Solo minúsculas, números y guiones.</mat-hint>
+            @if (negocioForm.controls.slug.hasError('pattern') && negocioForm.controls.slug.touched) {
+              <mat-error>Formato no válido (a-z, 0-9, -)</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>RUC</mat-label>
+            <input matInput formControlName="ruc" placeholder="20123456789" maxlength="11" />
+            @if (negocioForm.controls.ruc.hasError('pattern') && negocioForm.controls.ruc.touched) {
+              <mat-error>El RUC debe tener 11 dígitos</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Teléfono (opcional)</mat-label>
+            <input matInput formControlName="telefono" placeholder="999888777" />
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" type="submit" class="w-full !h-11" [disabled]="loading()">
+            @if (loading()) {
+              <mat-progress-spinner diameter="20" mode="indeterminate" />
+            } @else {
+              Registrar negocio
+            }
+          </button>
+        </form>
+      }
+
+      <p class="text-center text-xs text-muted-foreground mt-6">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login" class="text-brand-600 font-medium">Ingresar</a>
+      </p>
+    </div>
+  </div>
+</div>

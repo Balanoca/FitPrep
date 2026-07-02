@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Agregar comida</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="flex flex-col gap-2 pt-2 min-w-[320px]">
+    <mat-form-field appearance="outline">
+      <mat-label>Plato</mat-label>
+      <mat-select formControlName="platoId">
+        @for (p of platos(); track p.id) {
+          <mat-option [value]="p.id">
+            {{ p.nombre }} · {{ p.calorias }} kcal
+          </mat-option>
+        }
+      </mat-select>
+      @if (!loading() && platos().length === 0) {
+        <mat-hint>No hay platos disponibles en el catálogo.</mat-hint>
+      }
+      @if (form.controls.platoId.hasError('required') && form.controls.platoId.touched) {
+        <mat-error>Elige un plato</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="grid grid-cols-2 gap-2">
+      <mat-form-field appearance="outline">
+        <mat-label>Día</mat-label>
+        <mat-select formControlName="diaSemana">
+          @for (d of dias; track d.value) {
+            <mat-option [value]="d.value">{{ d.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipoComida">
+          @for (t of tipos; track t.value) {
+            <mat-option [value]="t.value">{{ t.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Cantidad</mat-label>
+      <input matInput type="number" min="1" formControlName="cantidad" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="agregar()">Agregar</button>
+</mat-dialog-actions>

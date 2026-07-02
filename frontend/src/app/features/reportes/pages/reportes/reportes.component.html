@@ -1,0 +1,71 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Negocio · Inteligencia"
+    title="Reportes"
+    description="Resumen de la operación de tu negocio a partir de tus pedidos y catálogo."
+  />
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else {
+    <!-- KPIs -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <app-kpi-card label="Ingresos (pagados)" [value]="(ingresos() | currency: 'USD') ?? '—'" />
+      <app-kpi-card label="Pedidos totales" [value]="totalPedidos().toString()" />
+      <app-kpi-card label="Ticket promedio" [value]="(ticketPromedio() | currency: 'USD') ?? '—'" hint="por pedido pagado" />
+      <app-kpi-card label="Clientes" [value]="totalClientes().toString()" [hint]="platosDisponibles() + ' platos activos'" />
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6">
+      <!-- Pedidos por estado -->
+      <app-card>
+        <h3 class="text-sm font-semibold mb-5">Pedidos por estado</h3>
+        @if (totalPedidos() === 0) {
+          <div class="grid place-items-center py-10 text-center text-muted-foreground text-sm">
+            Aún no hay pedidos registrados.
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (e of estados(); track e.estado) {
+              <div>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="text-muted-foreground">{{ e.estado }}</span>
+                  <span class="font-medium tabular-nums">{{ e.cantidad }} · {{ e.pct }}%</span>
+                </div>
+                <div class="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                  <div class="h-full rounded-full" [class]="e.color" [style.width.%]="e.pct"></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </app-card>
+
+      <!-- Top platos más pedidos -->
+      <app-card>
+        <h3 class="text-sm font-semibold mb-5">Platos más pedidos</h3>
+        @if (topPlatos().length === 0) {
+          <div class="grid place-items-center py-10 text-center text-muted-foreground text-sm">
+            Sin datos de consumo todavía.
+          </div>
+        } @else {
+          <ul class="space-y-3.5">
+            @for (p of topPlatos(); track p.nombre) {
+              <li>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-medium">{{ p.nombre }}</span>
+                  <span class="tabular-nums text-muted-foreground">{{ p.unidades }} uds</span>
+                </div>
+                <div class="h-1.5 bg-muted rounded-full">
+                  <div class="h-full bg-brand-500 rounded-full" [style.width.%]="p.pct"></div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </app-card>
+    </div>
+  }
+</div>
