@@ -1,0 +1,101 @@
+<div class="p-8">
+  <app-page-header
+    [eyebrow]="user()?.nombres ? 'Hola, ' + user()?.nombres + ' 👋' : 'Tu panel'"
+    title="Tu nutrición en un vistazo"
+    [description]="user()?.objetivoFitness ? 'Objetivo: ' + user()?.objetivoFitness : 'Revisa tus objetivos y planifica tu semana.'"
+  >
+    <a actions routerLink="/athlete/plan" mat-flat-button color="primary">
+      <mat-icon>calendar_month</mat-icon> Ver plan semanal
+    </a>
+  </app-page-header>
+
+  <!-- KPIs de objetivos (dato real del perfil) -->
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <app-kpi-card
+      label="Requerimiento calórico"
+      [value]="tieneObjetivos() ? ((user()?.requerimientoKcal | number: '1.0-0') ?? '—') + ' kcal' : '—'"
+      hint="objetivo diario"
+    />
+    <app-kpi-card label="Proteína objetivo" [value]="((user()?.reqProteinasG | number: '1.0-0') ?? '—') + 'g'" />
+    <app-kpi-card label="Carbohidratos objetivo" [value]="((user()?.reqCarbohidratosG | number: '1.0-0') ?? '—') + 'g'" />
+    <app-kpi-card label="Grasas objetivo" [value]="((user()?.reqGrasasG | number: '1.0-0') ?? '—') + 'g'" />
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Distribución de macros objetivo -->
+    <app-card>
+      <h3 class="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-5">
+        Objetivo diario
+      </h3>
+
+      @if (tieneObjetivos()) {
+        <div class="flex justify-center mb-6">
+          <app-donut [value]="100" [label]="(user()?.requerimientoKcal | number: '1.0-0') ?? '0'" sub="kcal" />
+        </div>
+        <div class="space-y-4">
+          @for (m of distribucion(); track m.label) {
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-muted-foreground">{{ m.label }}</span>
+                <span class="font-medium tabular-nums">
+                  @if (m.valor != null) { {{ m.valor | number: '1.0-0' }}g } @else { — }
+                </span>
+              </div>
+              <app-progress-bar [value]="m.pct" />
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="grid place-items-center py-12 text-center text-muted-foreground">
+          <mat-icon class="!size-9 !text-[36px] mb-2 opacity-40">track_changes</mat-icon>
+          <div class="text-sm">Aún no tienes objetivos definidos.</div>
+        </div>
+      }
+    </app-card>
+
+    <!-- Accesos rápidos -->
+    <app-card class="lg:col-span-2">
+      <h3 class="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-5">
+        Empieza aquí
+      </h3>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <a routerLink="/athlete/plan" class="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-brand-500/40 transition-colors">
+          <div class="size-10 rounded-lg bg-brand-50 grid place-items-center text-brand-700">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+          <div>
+            <div class="text-sm font-medium">Planifica tu semana</div>
+            <div class="text-xs text-muted-foreground">Arma tu plan de comidas</div>
+          </div>
+        </a>
+        <a routerLink="/tenants" class="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-brand-500/40 transition-colors">
+          <div class="size-10 rounded-lg bg-brand-50 grid place-items-center text-brand-700">
+            <mat-icon>storefront</mat-icon>
+          </div>
+          <div>
+            <div class="text-sm font-medium">Explora negocios</div>
+            <div class="text-xs text-muted-foreground">Descubre catálogos fit</div>
+          </div>
+        </a>
+        <a routerLink="/athlete/goals" class="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-brand-500/40 transition-colors">
+          <div class="size-10 rounded-lg bg-brand-50 grid place-items-center text-brand-700">
+            <mat-icon>track_changes</mat-icon>
+          </div>
+          <div>
+            <div class="text-sm font-medium">Tus objetivos</div>
+            <div class="text-xs text-muted-foreground">Ajusta tus macros</div>
+          </div>
+        </a>
+        <a routerLink="/athlete/orders" class="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-brand-500/40 transition-colors">
+          <div class="size-10 rounded-lg bg-brand-50 grid place-items-center text-brand-700">
+            <mat-icon>history</mat-icon>
+          </div>
+          <div>
+            <div class="text-sm font-medium">Historial de pedidos</div>
+            <div class="text-xs text-muted-foreground">Revisa tus planes</div>
+          </div>
+        </a>
+      </div>
+    </app-card>
+  </div>
+</div>

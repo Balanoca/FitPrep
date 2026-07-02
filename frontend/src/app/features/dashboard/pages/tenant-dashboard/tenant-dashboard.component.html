@@ -1,0 +1,84 @@
+<div class="p-8">
+  <app-page-header
+    [eyebrow]="user()?.nombres ? 'Hola, ' + user()?.nombres : 'Panel'"
+    title="Panel de control"
+    description="Resumen de tu catálogo y de la producción de la semana."
+  >
+    <a actions routerLink="/tenant/meals/new" mat-flat-button color="primary">
+      <mat-icon>add</mat-icon> Crear comida
+    </a>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else {
+    <!-- KPIs reales -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <app-kpi-card label="Platos en catálogo" [value]="totalPlatos().toString()" />
+      <app-kpi-card label="Disponibles" [value]="disponibles().toString()" [hint]="'de ' + totalPlatos()" />
+      <app-kpi-card label="Precio promedio" [value]="(precioPromedio() | currency: 'USD') ?? '—'" />
+      <app-kpi-card label="Unidades a producir" [value]="unidadesSemana().toString()" hint="esta semana" />
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <!-- Top platos por producción (dato real) -->
+      <app-card class="lg:col-span-2">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h3 class="text-sm font-semibold">Platos con más producción</h3>
+            <p class="text-xs text-muted-foreground mt-0.5">Según planes confirmados de esta semana</p>
+          </div>
+          <a routerLink="/tenant/production" class="text-xs text-brand-600 font-medium">Ver producción →</a>
+        </div>
+
+        @if (topPlatos().length === 0) {
+          <div class="grid place-items-center py-12 text-center text-muted-foreground">
+            <mat-icon class="!size-9 !text-[36px] mb-2 opacity-40">insights</mat-icon>
+            <div class="text-sm">Aún no hay producción confirmada esta semana.</div>
+          </div>
+        } @else {
+          <ul class="space-y-3.5">
+            @for (p of topPlatos(); track p.nombre) {
+              <li>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-medium">{{ p.nombre }}</span>
+                  <span class="tabular-nums text-muted-foreground">{{ p.unidades }} uds</span>
+                </div>
+                <div class="h-1.5 bg-muted rounded-full">
+                  <div class="h-full bg-brand-500 rounded-full" [style.width.%]="p.pct"></div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </app-card>
+
+      <!-- Accesos rápidos -->
+      <app-card>
+        <h3 class="text-sm font-semibold mb-5">Accesos rápidos</h3>
+        <div class="space-y-2.5">
+          <a routerLink="/tenant/meals" class="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-brand-500/40 transition-colors">
+            <div class="size-9 rounded-lg bg-brand-50 grid place-items-center text-brand-700">
+              <mat-icon class="!size-5 !text-[20px]">lunch_dining</mat-icon>
+            </div>
+            <div>
+              <div class="text-sm font-medium">Catálogo de comidas</div>
+              <div class="text-xs text-muted-foreground">{{ totalPlatos() }} platos</div>
+            </div>
+          </a>
+          <a routerLink="/tenant/production" class="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-brand-500/40 transition-colors">
+            <div class="size-9 rounded-lg bg-brand-50 grid place-items-center text-brand-700">
+              <mat-icon class="!size-5 !text-[20px]">factory</mat-icon>
+            </div>
+            <div>
+              <div class="text-sm font-medium">Producción semanal</div>
+              <div class="text-xs text-muted-foreground">{{ unidadesSemana() }} unidades</div>
+            </div>
+          </a>
+        </div>
+      </app-card>
+    </div>
+  }
+</div>

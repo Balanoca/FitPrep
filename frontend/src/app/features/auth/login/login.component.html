@@ -1,0 +1,81 @@
+<div class="min-h-screen grid lg:grid-cols-2 bg-background">
+  <!-- Panel de marca (izquierda) -->
+  <div class="hidden lg:flex flex-col justify-between p-12 bg-brand-950 text-white relative overflow-hidden">
+    <div class="flex items-center gap-2.5">
+      <div class="size-10 rounded-xl bg-brand-500 grid place-items-center">
+        <mat-icon class="text-white">restaurant</mat-icon>
+      </div>
+      <span class="text-lg font-semibold tracking-tight">FitPrep</span>
+    </div>
+    <div class="max-w-md">
+      <h2 class="text-3xl font-semibold tracking-tight leading-tight">
+        Nutrición fit, planificada y entregada.
+      </h2>
+      <p class="mt-4 text-sm text-white/70">
+        Gestiona tu catálogo, planes semanales y producción de cocina desde un solo lugar.
+      </p>
+    </div>
+    <div class="text-xs text-white/40">© 2026 FitPrep · SaaS multi-tenant</div>
+  </div>
+
+  <!-- Formulario (derecha) -->
+  <div class="flex items-center justify-center p-6 sm:p-12">
+    <div class="w-full max-w-sm">
+      <div class="mb-8">
+        <div class="text-[11px] font-semibold uppercase tracking-widest text-brand-600 mb-1.5">
+          Bienvenido de nuevo
+        </div>
+        <h1 class="text-2xl font-semibold tracking-tight">Inicia sesión</h1>
+        <p class="text-sm text-muted-foreground mt-1.5">Accede a tu panel de FitPrep.</p>
+      </div>
+
+      @if (error()) {
+        <div class="mb-4 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="admin@fitprep.com" />
+          <mat-icon matSuffix>mail</mat-icon>
+          @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+            <mat-error>El correo es obligatorio</mat-error>
+          }
+          @if (form.controls.email.hasError('email')) {
+            <mat-error>Correo no válido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Contraseña</mat-label>
+          <input matInput type="password" formControlName="password" placeholder="••••••••" />
+          <mat-icon matSuffix>lock</mat-icon>
+          @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+            <mat-error>La contraseña es obligatoria</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="w-full !h-11"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <mat-progress-spinner diameter="20" mode="indeterminate" />
+          } @else {
+            Entrar
+          }
+        </button>
+      </form>
+
+      <p class="text-center text-xs text-muted-foreground mt-6">
+        ¿No tienes cuenta?
+        <a routerLink="/register" class="text-brand-600 font-medium">Crear cuenta</a>
+      </p>
+    </div>
+  </div>
+</div>

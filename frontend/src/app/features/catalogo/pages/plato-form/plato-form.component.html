@@ -1,0 +1,112 @@
+<div class="p-8 max-w-5xl">
+  <app-page-header
+    eyebrow="Catálogo"
+    [title]="esEdicion ? 'Editar comida' : 'Crear nueva comida'"
+    description="Define los datos básicos y la información nutricional del plato."
+  >
+    <a actions routerLink="/tenant/meals" mat-stroked-button>Cancelar</a>
+    <button
+      actions
+      mat-flat-button
+      color="primary"
+      type="submit"
+      form="platoForm"
+      [disabled]="saving()"
+    >
+      @if (saving()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" />
+      } @else {
+        {{ esEdicion ? 'Guardar cambios' : 'Crear plato' }}
+      }
+    </button>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else {
+    <form id="platoForm" [formGroup]="form" (ngSubmit)="guardar()" class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-5">
+        <!-- Información básica -->
+        <app-card>
+          <h3 class="text-sm font-semibold mb-4">Información básica</h3>
+          <div class="space-y-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombre" placeholder="Ej. Pollo al Limón & Quinua" />
+              @if (form.controls.nombre.hasError('required') && form.controls.nombre.touched) {
+                <mat-error>El nombre es obligatorio</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput formControlName="descripcion" rows="3"
+                placeholder="Describe la comida en 1-2 frases..."></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full sm:w-1/2">
+              <mat-label>Precio</mat-label>
+              <span matTextPrefix>$&nbsp;</span>
+              <input matInput type="number" step="0.01" formControlName="precio" placeholder="8.50" />
+              @if (form.controls.precio.hasError('min')) {
+                <mat-error>El precio no puede ser negativo</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </app-card>
+
+        <!-- Información nutricional -->
+        <app-card>
+          <h3 class="text-sm font-semibold mb-4">Información nutricional</h3>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Calorías</mat-label>
+              <input matInput type="number" formControlName="calorias" placeholder="520" />
+              <span matTextSuffix>kcal</span>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Proteína</mat-label>
+              <input matInput type="number" formControlName="proteinas" placeholder="45" />
+              <span matTextSuffix>g</span>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Carbohidratos</mat-label>
+              <input matInput type="number" formControlName="carbohidratos" placeholder="52" />
+              <span matTextSuffix>g</span>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Grasas</mat-label>
+              <input matInput type="number" formControlName="grasas" placeholder="14" />
+              <span matTextSuffix>g</span>
+            </mat-form-field>
+          </div>
+        </app-card>
+      </div>
+
+      <!-- Panel lateral -->
+      <div class="space-y-5">
+        <app-card>
+          <h3 class="text-sm font-semibold mb-4">Disponibilidad</h3>
+          <mat-slide-toggle formControlName="disponible" color="primary">
+            Disponible en el catálogo
+          </mat-slide-toggle>
+          <p class="text-xs text-muted-foreground mt-3">
+            Los platos no disponibles no aparecen para los deportistas.
+          </p>
+        </app-card>
+
+        <app-card>
+          <h3 class="text-sm font-semibold mb-3">Foto</h3>
+          <div class="aspect-square rounded-xl border-2 border-dashed border-border grid place-items-center text-muted-foreground opacity-60">
+            <div class="text-center">
+              <mat-icon class="!size-6 !text-[24px] mb-1">upload</mat-icon>
+              <div class="text-xs">Próximamente</div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+    </form>
+  }
+</div>

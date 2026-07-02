@@ -1,0 +1,62 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Logística · Cocina"
+    title="Consolidado de producción"
+    description="Cuántas unidades de cada plato hay que cocinar por día, según los planes confirmados."
+  >
+    <mat-form-field actions appearance="outline" class="!w-52" subscriptSizing="dynamic">
+      <mat-label>Semana (lunes)</mat-label>
+      <input matInput [matDatepicker]="picker" [value]="fecha()" (dateChange)="onFecha($event.value)" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </app-page-header>
+
+  <!-- KPIs -->
+  <div class="grid sm:grid-cols-3 gap-5 mb-8">
+    <app-kpi-card label="Unidades a producir" [value]="totalUnidades().toString()" hint="en toda la semana" />
+    <app-kpi-card label="Platos distintos" [value]="platosDistintos().toString()" />
+    <app-kpi-card label="Días con producción" [value]="porDia().length.toString()" hint="de 7" />
+  </div>
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else if (items().length === 0) {
+    <app-card>
+      <div class="grid place-items-center py-16 text-center text-muted-foreground">
+        <mat-icon class="!size-10 !text-[40px] mb-2 opacity-40">skillet</mat-icon>
+        <div class="text-sm">No hay producción para esta semana.</div>
+        <div class="text-xs mt-1">Solo se cuentan los planes en estado CONFIRMADO o PAGADO.</div>
+      </div>
+    </app-card>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      @for (grupo of porDia(); track grupo.diaSemana) {
+        <div class="rounded-2xl bg-surface border border-border p-3">
+          <div class="flex items-center justify-between px-2 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="size-1.5 rounded-full bg-brand-500"></span>
+              <h3 class="text-xs font-bold uppercase tracking-widest">{{ diaLabel(grupo.diaSemana) }}</h3>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-card border border-border text-muted-foreground tabular-nums">
+              {{ grupo.totalUnidades }} uds
+            </span>
+          </div>
+          <div class="space-y-2">
+            @for (item of grupo.items; track item.platoId + item.tipoComida) {
+              <app-card padding="p-3">
+                <div class="flex items-center justify-between mb-1.5">
+                  <app-badge tone="brand">{{ tipoLabel(item.tipoComida) }}</app-badge>
+                  <span class="text-sm font-semibold tabular-nums">×{{ item.cantidadTotal }}</span>
+                </div>
+                <div class="text-sm font-medium leading-tight">{{ item.platoNombre }}</div>
+              </app-card>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

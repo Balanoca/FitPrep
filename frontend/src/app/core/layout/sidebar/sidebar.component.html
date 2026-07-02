@@ -1,0 +1,62 @@
+@if (meta(); as m) {
+  <aside class="hidden lg:flex w-64 shrink-0 flex-col border-r border-border bg-surface h-screen sticky top-0">
+    <!-- Cabecera / marca -->
+    <div class="px-4 py-4 border-b border-border">
+      <div class="flex items-center gap-2.5">
+        <div class="size-9 rounded-lg bg-brand-500 grid place-items-center shrink-0">
+          <mat-icon class="text-white !size-4 !text-[16px] leading-none">{{ m.icon }}</mat-icon>
+        </div>
+        <div class="min-w-0">
+          <div class="text-sm font-semibold tracking-tight truncate">{{ m.label }}</div>
+          <div class="text-[10px] text-muted-foreground uppercase tracking-widest truncate">{{ m.sub }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+      @for (group of m.groups; track group.title) {
+        <div>
+          <div class="px-2 mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            {{ group.title }}
+          </div>
+          <ul class="space-y-0.5">
+            @for (item of group.items; track item.to) {
+              <li>
+                <a
+                  [routerLink]="item.to"
+                  routerLinkActive="bg-brand-50 text-brand-700 font-medium"
+                  [routerLinkActiveOptions]="{ exact: item.to.split('/').length <= 2 }"
+                  class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] text-foreground/70 hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <mat-icon class="!size-4 !text-[18px] shrink-0">{{ item.icon }}</mat-icon>
+                  <span class="truncate">{{ item.label }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </nav>
+
+    <!-- Usuario -->
+    <div class="border-t border-border p-3">
+      <div class="flex items-center gap-2.5 px-1.5 py-1.5 rounded-md">
+        <div class="size-8 rounded-full bg-brand-100 grid place-items-center text-[11px] font-semibold text-brand-700 shrink-0">
+          {{ initials() }}
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-[12px] font-medium truncate">{{ user()?.nombres }} {{ user()?.apellidos }}</div>
+          <div class="text-[10px] text-muted-foreground truncate">{{ user()?.email }}</div>
+        </div>
+        <button
+          (click)="logout()"
+          title="Salir"
+          class="size-7 grid place-items-center rounded-md hover:bg-muted text-muted-foreground"
+        >
+          <mat-icon class="!size-4 !text-[18px]">logout</mat-icon>
+        </button>
+      </div>
+    </div>
+  </aside>
+}
