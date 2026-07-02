@@ -15,6 +15,12 @@ public interface GestionarPlanSemanalUseCase {
 
     Optional<PlanSemanal> obtenerPlanPorId(Long id);
 
+    /** Planes de un usuario, del más reciente al más antiguo. */
+    List<PlanSemanal> listarPlanesDeUsuario(Long usuarioId);
+
+    /** Cambia el estado de pago de un plan (confirmar, pagar, cancelar). */
+    PlanSemanal cambiarEstadoPago(Long planId, String nuevoEstado);
+
     /** Comando para crear un plan sin acoplar el caso de uso a DTOs web. */
     record CrearPlanCommand(
             Long usuarioId,

@@ -11,6 +11,7 @@ import com.fitprep.demo.planificacion_semanal.domain.port.out.PlanSemanalReposit
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -70,5 +71,21 @@ public class PlanSemanalService implements GestionarPlanSemanalUseCase {
     @Override
     public Optional<PlanSemanal> obtenerPlanPorId(Long id) {
         return planSemanalRepository.findById(id);
+    }
+
+    @Override
+    public List<PlanSemanal> listarPlanesDeUsuario(Long usuarioId) {
+        return planSemanalRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    @Transactional
+    public PlanSemanal cambiarEstadoPago(Long planId, String nuevoEstado) {
+        PlanSemanal plan = planSemanalRepository.findById(planId)
+                .orElseThrow(() -> new IllegalArgumentException("Plan no encontrado con ID: " + planId));
+
+        plan.cambiarEstadoPago(nuevoEstado);
+
+        return planSemanalRepository.save(plan);
     }
 }

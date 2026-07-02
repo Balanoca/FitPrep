@@ -15,5 +15,7 @@ public interface PlanSemanalRepositoryPort {
 
     Optional<PlanSemanal> findById(Long id);
 
+    List<PlanSemanal> findByUsuarioId(Long usuarioId);
+
     List<PlanSemanal> findByFechaInicioSemanaAndEstadoPagoIn(LocalDate fecha, List<String> estadosPago);
 }

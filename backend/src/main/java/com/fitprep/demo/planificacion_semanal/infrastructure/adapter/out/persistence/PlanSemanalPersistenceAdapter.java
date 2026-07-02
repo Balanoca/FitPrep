@@ -30,6 +30,13 @@ public class PlanSemanalPersistenceAdapter implements PlanSemanalRepositoryPort 
     }
 
     @Override
+    public List<PlanSemanal> findByUsuarioId(Long usuarioId) {
+        return jpaRepository.findByUsuarioIdOrderByIdDesc(usuarioId).stream()
+                .map(PlanSemanalMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<PlanSemanal> findByFechaInicioSemanaAndEstadoPagoIn(LocalDate fecha, List<String> estadosPago) {
         return jpaRepository.findByFechaInicioSemanaAndEstadoPagoIn(fecha, estadosPago).stream()
                 .map(PlanSemanalMapper::toDomain)

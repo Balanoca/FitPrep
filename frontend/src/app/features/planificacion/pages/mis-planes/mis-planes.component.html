@@ -1,0 +1,80 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Atleta · Pedidos"
+    title="Mis pedidos"
+    description="Tus planes semanales. Confírmalos para que entren a producción."
+  >
+    <a actions routerLink="/athlete/plan" mat-flat-button color="primary">
+      <mat-icon>add</mat-icon> Nuevo plan
+    </a>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else if (planes().length === 0) {
+    <app-card>
+      <div class="grid place-items-center py-16 text-center text-muted-foreground">
+        <mat-icon class="!size-10 !text-[40px] mb-2 opacity-40">receipt_long</mat-icon>
+        <div class="text-sm">Aún no tienes pedidos.</div>
+        <a routerLink="/athlete/plan" class="text-xs text-brand-600 font-medium mt-2">Crea tu primer plan →</a>
+      </div>
+    </app-card>
+  } @else {
+    <div class="space-y-4">
+      @for (plan of planes(); track plan.id) {
+        <app-card>
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="size-11 rounded-xl bg-brand-50 grid place-items-center text-brand-700 shrink-0">
+              <mat-icon>calendar_month</mat-icon>
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-semibold">Pedido #{{ plan.id }}</span>
+                <app-badge [tone]="tono(plan.estadoPago)">{{ plan.estadoPago }}</app-badge>
+              </div>
+              <div class="text-xs text-muted-foreground mt-0.5">
+                Semana del {{ plan.fechaInicioSemana | date: 'longDate' }}
+                · {{ totalComidas(plan) }} comidas
+              </div>
+            </div>
+
+            <div class="text-right">
+              <div class="text-base font-semibold tabular-nums">{{ plan.montoTotal | currency: 'USD' }}</div>
+              <div class="text-[11px] text-muted-foreground">monto total</div>
+            </div>
+
+            <div class="shrink-0">
+              @if (actualizando() === plan.id) {
+                <mat-progress-spinner diameter="24" mode="indeterminate" />
+              } @else if (!esTerminal(plan.estadoPago)) {
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  @if (plan.estadoPago === 'PENDIENTE') {
+                    <button mat-menu-item (click)="cambiar(plan, 'CONFIRMADO')">
+                      <mat-icon>check_circle</mat-icon> Confirmar
+                    </button>
+                  }
+                  @if (plan.estadoPago === 'CONFIRMADO') {
+                    <button mat-menu-item (click)="cambiar(plan, 'PAGADO')">
+                      <mat-icon>payments</mat-icon> Marcar como pagado
+                    </button>
+                  }
+                  <button mat-menu-item (click)="cambiar(plan, 'CANCELADO')">
+                    <mat-icon>cancel</mat-icon> Cancelar
+                  </button>
+                </mat-menu>
+              } @else {
+                <mat-icon class="text-muted-foreground opacity-50">lock</mat-icon>
+              }
+            </div>
+          </div>
+        </app-card>
+      }
+    </div>
+  }
+</div>

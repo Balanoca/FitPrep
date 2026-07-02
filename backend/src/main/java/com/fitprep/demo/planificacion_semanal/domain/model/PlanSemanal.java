@@ -58,6 +58,25 @@ public class PlanSemanal {
         }
     }
 
+    /** Estados válidos del ciclo de pago del plan. */
+    private static final java.util.Set<String> ESTADOS_VALIDOS =
+            java.util.Set.of("PENDIENTE", "CONFIRMADO", "PAGADO", "CANCELADO");
+
+    /**
+     * Regla de negocio: transiciona el estado de pago validando que sea uno
+     * permitido. Un plan cancelado o pagado es terminal y no puede cambiar.
+     */
+    public void cambiarEstadoPago(String nuevoEstado) {
+        if (nuevoEstado == null || !ESTADOS_VALIDOS.contains(nuevoEstado)) {
+            throw new IllegalArgumentException("Estado de pago no válido: " + nuevoEstado);
+        }
+        if ("PAGADO".equals(this.estadoPago) || "CANCELADO".equals(this.estadoPago)) {
+            throw new IllegalStateException(
+                    "El plan ya está en estado terminal (" + this.estadoPago + ") y no puede cambiarse.");
+        }
+        this.estadoPago = nuevoEstado;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

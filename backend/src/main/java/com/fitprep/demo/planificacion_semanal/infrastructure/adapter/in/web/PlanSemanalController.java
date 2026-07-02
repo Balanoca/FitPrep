@@ -1,16 +1,20 @@
 package com.fitprep.demo.planificacion_semanal.infrastructure.adapter.in.web;
 
+import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
+import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase;
 import com.fitprep.demo.planificacion_semanal.domain.model.DetallePlan;
 import com.fitprep.demo.planificacion_semanal.domain.model.ExcesoCaloriasException;
 import com.fitprep.demo.planificacion_semanal.domain.model.PlanSemanal;
 import com.fitprep.demo.planificacion_semanal.domain.port.in.GestionarPlanSemanalUseCase;
 import com.fitprep.demo.planificacion_semanal.domain.port.in.GestionarPlanSemanalUseCase.ComidaCommand;
 import com.fitprep.demo.planificacion_semanal.domain.port.in.GestionarPlanSemanalUseCase.CrearPlanCommand;
+import com.fitprep.demo.planificacion_semanal.infrastructure.adapter.in.web.dto.CambiarEstadoRequest;
 import com.fitprep.demo.planificacion_semanal.infrastructure.adapter.in.web.dto.ComidaProgramadaDTO;
 import com.fitprep.demo.planificacion_semanal.infrastructure.adapter.in.web.dto.PlanSemanalRequest;
 import com.fitprep.demo.planificacion_semanal.infrastructure.adapter.in.web.dto.PlanSemanalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,9 +27,12 @@ import java.util.stream.Collectors;
 public class PlanSemanalController {
 
     private final GestionarPlanSemanalUseCase gestionarPlan;
+    private final AutenticacionUseCase autenticacion;
 
-    public PlanSemanalController(GestionarPlanSemanalUseCase gestionarPlan) {
+    public PlanSemanalController(GestionarPlanSemanalUseCase gestionarPlan,
+                                 AutenticacionUseCase autenticacion) {
         this.gestionarPlan = gestionarPlan;
+        this.autenticacion = autenticacion;
     }
 
     @PostMapping
@@ -66,6 +73,33 @@ public class PlanSemanalController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /** Planes del usuario autenticado (resuelto por el email del JWT). */
+    @GetMapping("/mis-planes")
+    public ResponseEntity<?> misPlanes() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (email == null || "anonymousUser".equals(email)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+        Usuario usuario = autenticacion.obtenerPerfilPorEmail(email);
+        List<PlanSemanalResponse> planes = gestionarPlan.listarPlanesDeUsuario(usuario.getId()).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(planes);
+    }
+
+    /** Cambia el estado de pago de un plan (confirmar / pagar / cancelar). */
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody CambiarEstadoRequest request) {
+        try {
+            PlanSemanal actualizado = gestionarPlan.cambiarEstadoPago(id, request.getEstadoPago());
+            return ResponseEntity.ok(mapToResponse(actualizado));
+        } catch (IllegalArgumentException e) {
+            return errorBody("Solicitud no válida", e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (IllegalStateException e) {
+            return errorBody("Transición no permitida", e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
     @ExceptionHandler(ExcesoCaloriasException.class)
     public ResponseEntity<Map<String, Object>> handleExcesoCalorias(ExcesoCaloriasException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -98,5 +132,13 @@ public class PlanSemanalController {
                 .tipoComida(detalle.getTipoComida())
                 .cantidad(detalle.getCantidad())
                 .build();
+    }
+
+    private ResponseEntity<Map<String, Object>> errorBody(String error, String message, HttpStatus status) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("error", error);
+        body.put("message", message);
+        body.put("status", status.value());
+        return ResponseEntity.status(status).body(body);
     }
 }

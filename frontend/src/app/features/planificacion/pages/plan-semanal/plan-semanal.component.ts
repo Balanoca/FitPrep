@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -46,6 +47,7 @@ export class PlanSemanalComponent {
   private readonly planService = inject(PlanService);
   private readonly dialog = inject(MatDialog);
   private readonly snackbar = inject(MatSnackBar);
+  private readonly router = inject(Router);
 
   readonly user = this.auth.user;
   readonly saving = signal(false);
@@ -127,6 +129,7 @@ export class PlanSemanalComponent {
       next: () => {
         this.saving.set(false);
         this.snackbar.open('Plan semanal guardado.', 'Cerrar', { duration: 3000 });
+        this.router.navigate(['/athlete/orders']);
       },
       error: (err) => {
         this.saving.set(false);

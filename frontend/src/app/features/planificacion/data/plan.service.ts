@@ -31,6 +31,27 @@ export class PlanService {
       platos: this.platoService.listar(),
     }).pipe(map(({ dto, platos }) => PlanMapper.toModel(dto, indexar(platos))));
   }
+
+  /** Planes del usuario autenticado (el backend lo resuelve por el JWT). */
+  listarMisPlanes(): Observable<PlanSemanal[]> {
+    return forkJoin({
+      dtos: this.http.get<PlanSemanalResponseDto[]>(`${this.base}/mis-planes`),
+      platos: this.platoService.listar(),
+    }).pipe(
+      map(({ dtos, platos }) => {
+        const idx = indexar(platos);
+        return dtos.map((dto) => PlanMapper.toModel(dto, idx));
+      }),
+    );
+  }
+
+  /** Cambia el estado de pago de un plan (CONFIRMADO, PAGADO, CANCELADO). */
+  cambiarEstado(planId: number, estadoPago: string): Observable<PlanSemanal> {
+    return forkJoin({
+      dto: this.http.patch<PlanSemanalResponseDto>(`${this.base}/${planId}/estado`, { estadoPago }),
+      platos: this.platoService.listar(),
+    }).pipe(map(({ dto, platos }) => PlanMapper.toModel(dto, indexar(platos))));
+  }
 }
 
 function indexar(platos: Plato[]): Map<number, Plato> {

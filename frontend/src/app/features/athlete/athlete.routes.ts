@@ -22,7 +22,11 @@ export const ATHLETE_ROUTES: Routes = [
   { path: 'add-meal', component: PlaceholderPageComponent, data: { title: 'Agregar comida', eyebrow: 'Atleta' } },
   { path: 'cart', component: PlaceholderPageComponent, data: { title: 'Carrito semanal', eyebrow: 'Atleta' } },
   { path: 'checkout', component: PlaceholderPageComponent, data: { title: 'Checkout', eyebrow: 'Atleta' } },
-  { path: 'orders', component: PlaceholderPageComponent, data: { title: 'Historial de pedidos', eyebrow: 'Atleta' } },
+  {
+    path: 'orders',
+    loadComponent: () =>
+      import('../planificacion/pages/mis-planes/mis-planes.component').then((m) => m.MisPlanesComponent),
+  },
   { path: 'profile', component: PlaceholderPageComponent, data: { title: 'Perfil', eyebrow: 'Atleta' } },
   { path: 'settings', component: PlaceholderPageComponent, data: { title: 'Configuración', eyebrow: 'Atleta' } },
 ];
