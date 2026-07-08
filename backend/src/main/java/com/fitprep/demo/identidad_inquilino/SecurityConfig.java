@@ -43,6 +43,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/negocios/publico").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/platos/publico").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/platos/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")

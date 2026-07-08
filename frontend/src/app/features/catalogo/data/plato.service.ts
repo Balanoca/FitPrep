@@ -22,6 +22,13 @@ export class PlatoService {
       .pipe(map((dtos) => dtos.map(PlatoMapper.toModel)));
   }
 
+  /** Catálogo público (disponibles) de una cocina concreta. Sin autenticación. */
+  listarPublicos(negocioId: number): Observable<Plato[]> {
+    return this.http
+      .get<PlatoResponseDto[]>(`${this.base}/publico`, { params: { negocioId } })
+      .pipe(map((dtos) => dtos.map(PlatoMapper.toModel)));
+  }
+
   obtener(id: number): Observable<Plato> {
     return this.http
       .get<PlatoResponseDto>(`${this.base}/${id}`)

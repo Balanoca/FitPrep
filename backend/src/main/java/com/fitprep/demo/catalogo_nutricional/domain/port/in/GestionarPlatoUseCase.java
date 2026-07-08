@@ -13,6 +13,9 @@ public interface GestionarPlatoUseCase {
 
     List<Plato> listarTodos();
 
+    /** Catálogo público (platos disponibles) de una cocina concreta. */
+    List<Plato> listarDisponiblesPorCocina(Integer negocioId);
+
     Optional<Plato> obtenerPorId(Long id);
 
     Plato guardar(Plato plato);

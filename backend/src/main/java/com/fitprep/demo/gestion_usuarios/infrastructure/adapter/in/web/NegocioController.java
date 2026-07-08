@@ -6,6 +6,7 @@ import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.GestionarNegocioUseCase;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.GestionarNegocioUseCase.ActualizarNegocioCommand;
 import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.ActualizarNegocioRequest;
+import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.CocinaPublicaResponse;
 import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.NegocioResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +31,22 @@ public class NegocioController {
                              AutenticacionUseCase autenticacion) {
         this.gestionarNegocio = gestionarNegocio;
         this.autenticacion = autenticacion;
+    }
+
+    /**
+     * Catálogo público de cocinas activas. Sin autenticación: lo consume la
+     * pantalla de registro para que el deportista elija dónde comer.
+     */
+    @GetMapping("/publico")
+    public ResponseEntity<List<CocinaPublicaResponse>> listarCocinasPublicas() {
+        List<CocinaPublicaResponse> cocinas = autenticacion.listarCocinasPublicas().stream()
+                .map(n -> CocinaPublicaResponse.builder()
+                        .id(n.getId())
+                        .nombreComercial(n.getNombreComercial())
+                        .slug(n.getSlug())
+                        .build())
+                .toList();
+        return ResponseEntity.ok(cocinas);
     }
 
     /** Datos del negocio del tenant autenticado. */

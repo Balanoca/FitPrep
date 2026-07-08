@@ -36,5 +36,9 @@ export const ATHLETE_ROUTES: Routes = [
     loadComponent: () =>
       import('../perfil/pages/perfil/perfil.component').then((m) => m.PerfilComponent),
   },
-  { path: 'settings', component: PlaceholderPageComponent, data: { title: 'Configuración', eyebrow: 'Atleta' } },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('../perfil/pages/cocina/cocina.component').then((m) => m.CocinaComponent),
+  },
 ];

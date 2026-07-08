@@ -30,6 +30,13 @@ public class PlatoPersistenceAdapter implements PlatoRepositoryPort {
     }
 
     @Override
+    public List<Plato> findDisponiblesByNegocioId(Integer negocioId) {
+        return jpaRepository.findDisponiblesByNegocioIdNative(negocioId).stream()
+                .map(PlatoMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<Plato> findById(Long id) {
         return jpaRepository.findById(id).map(PlatoMapper::toDomain);
     }

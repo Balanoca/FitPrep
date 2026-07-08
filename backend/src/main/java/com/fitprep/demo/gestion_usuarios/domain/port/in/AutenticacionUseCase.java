@@ -3,6 +3,8 @@ package com.fitprep.demo.gestion_usuarios.domain.port.in;
 import com.fitprep.demo.gestion_usuarios.domain.model.Negocio;
 import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
 
+import java.util.List;
+
 /**
  * Puerto de entrada: casos de uso de autenticación y registro.
  */
@@ -18,6 +20,12 @@ public interface AutenticacionUseCase {
 
     /** Actualiza los objetivos nutricionales del usuario identificado por email. */
     Usuario actualizarObjetivos(String email, ActualizarObjetivosCommand command);
+
+    /** Cocinas (tenants) activas, para que el deportista elija dónde comer. */
+    List<Negocio> listarCocinasPublicas();
+
+    /** Cambia la cocina del usuario identificado por email (Opción B: cocina fija reasignable). */
+    Usuario cambiarCocina(String email, Integer negocioId);
 
     /** Resultado de un login exitoso: token + usuario autenticado. */
     record ResultadoLogin(String token, Usuario usuario) {
@@ -35,6 +43,7 @@ public interface AutenticacionUseCase {
 
     /** Datos necesarios para registrar un usuario, sin acoplar a DTOs web. */
     record RegistroUsuarioCommand(
+            Integer negocioId,
             String nombres,
             String apellidos,
             String email,

@@ -26,8 +26,16 @@ export interface LoginRequest {
   password: string;
 }
 
+/** Cocina (tenant) tal como la expone GET /negocios/publico. */
+export interface CocinaPublica {
+  id: number;
+  nombreComercial: string;
+  slug: string;
+}
+
 /** Alta de deportista (POST /auth/register/deportista). */
 export interface RegisterDeportistaRequest {
+  negocioId: number;
   nombres: string;
   apellidos: string;
   email: string;
