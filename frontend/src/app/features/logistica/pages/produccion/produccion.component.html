@@ -59,4 +59,58 @@
       }
     </div>
   }
+
+  <!-- Lista de compra de insumos de la semana -->
+  @if (listaCompra().length > 0) {
+    <div class="mt-10">
+      <div class="flex items-end justify-between mb-4">
+        <div>
+          <div class="text-[11px] font-semibold uppercase tracking-widest text-brand-600">Insumos</div>
+          <h2 class="text-lg font-semibold tracking-tight">Lista de compra de la semana</h2>
+          <p class="text-sm text-muted-foreground">
+            Cuánto comprar de cada insumo para cubrir los pedidos confirmados.
+          </p>
+        </div>
+        @if (costoTotalCompra() > 0) {
+          <div class="text-right">
+            <div class="text-[11px] uppercase tracking-widest text-muted-foreground">Costo estimado</div>
+            <div class="text-xl font-semibold tabular-nums">S/ {{ costoTotalCompra() | number: '1.2-2' }}</div>
+          </div>
+        }
+      </div>
+
+      <app-card padding="p-0">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-surface text-[10px] uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th class="text-left px-5 py-3">Insumo</th>
+                <th class="text-right px-5 py-3">Cantidad a comprar</th>
+                <th class="text-right px-5 py-3">Precio / unidad</th>
+                <th class="text-right px-5 py-3">Costo estimado</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (i of listaCompra(); track i.insumoId) {
+                <tr class="hover:bg-muted/40">
+                  <td class="px-5 py-3 font-medium">{{ i.insumoNombre }}</td>
+                  <td class="px-5 py-3 text-right tabular-nums">
+                    {{ i.cantidadTotal | number: '1.0-3' }} {{ i.unidad }}
+                  </td>
+                  <td class="px-5 py-3 text-right tabular-nums text-muted-foreground">
+                    @if (i.precioUnitario != null) { S/ {{ i.precioUnitario | number: '1.2-2' }} }
+                    @else { — }
+                  </td>
+                  <td class="px-5 py-3 text-right tabular-nums font-medium">
+                    @if (i.costoEstimado != null) { S/ {{ i.costoEstimado | number: '1.2-2' }} }
+                    @else { — }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-card>
+    </div>
+  }
 </div>
