@@ -59,6 +59,8 @@ public class SecurityConfig {
                 // Suscripciones: el panel global es solo ADMIN; el resto TENANT/ADMIN.
                 .requestMatchers("/api/v1/suscripciones/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/suscripciones/**").hasAnyRole("TENANT", "ADMIN")
+                // Panel del ADMIN sobre negocios (va antes que la regla /negocios/**).
+                .requestMatchers("/api/v1/negocios/admin/**").hasRole("ADMIN")
                 // Listar TODOS los pedidos del negocio: solo TENANT/ADMIN.
                 .requestMatchers(HttpMethod.GET, "/api/v1/planes").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers("/api/v1/planes/**").authenticated()

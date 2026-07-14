@@ -1,9 +1,12 @@
 package com.fitprep.demo.gestion_usuarios.infrastructure.adapter.out.persistence;
 
 import com.fitprep.demo.gestion_usuarios.domain.model.Negocio;
+import com.fitprep.demo.gestion_usuarios.domain.model.NegocioResumen;
 import com.fitprep.demo.gestion_usuarios.domain.port.out.NegocioRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +33,21 @@ public class NegocioPersistenceAdapter implements NegocioRepositoryPort {
     public List<Negocio> findAllActivos() {
         return jpaRepository.findByEstadoOrderByNombreComercialAsc("ACTIVO").stream()
                 .map(NegocioMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<NegocioResumen> findAllResumen() {
+        return jpaRepository.findAllResumen().stream()
+                .map(r -> new NegocioResumen(
+                        r.getId(),
+                        r.getNombreComercial(),
+                        r.getSlug(),
+                        r.getEstado(),
+                        r.getFechaRegistro() == null ? null
+                                : LocalDateTime.ofInstant(r.getFechaRegistro(), ZoneId.systemDefault()),
+                        r.getTotalDeportistas(),
+                        r.getTotalPlatos()))
                 .toList();
     }
 

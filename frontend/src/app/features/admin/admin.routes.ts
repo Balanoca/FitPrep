@@ -3,8 +3,16 @@ import { Routes } from '@angular/router';
 import { PlaceholderPageComponent } from '../shared-pages/placeholder-page.component';
 
 export const ADMIN_ROUTES: Routes = [
-  { path: '', component: PlaceholderPageComponent, data: { title: 'Dashboard general', eyebrow: 'Plataforma' } },
-  { path: 'businesses', component: PlaceholderPageComponent, data: { title: 'Negocios registrados', eyebrow: 'Plataforma' } },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent),
+  },
+  {
+    path: 'businesses',
+    loadComponent: () =>
+      import('./pages/businesses/businesses.component').then((m) => m.BusinessesComponent),
+  },
   { path: 'users', component: PlaceholderPageComponent, data: { title: 'Usuarios', eyebrow: 'Plataforma' } },
   {
     path: 'subscriptions',
