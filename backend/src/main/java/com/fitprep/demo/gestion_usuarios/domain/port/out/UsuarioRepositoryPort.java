@@ -23,6 +23,9 @@ public interface UsuarioRepositoryPort {
     /** Usuarios con el rol dado, del tenant activo. */
     List<Usuario> findByRol(String rol);
 
+    /** Todos los usuarios de todas las cocinas (panel ADMIN, sin filtro de tenant). */
+    List<Usuario> findAllGlobal();
+
     Usuario save(Usuario usuario);
 
     /**

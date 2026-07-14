@@ -13,7 +13,10 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () =>
       import('./pages/businesses/businesses.component').then((m) => m.BusinessesComponent),
   },
-  { path: 'users', component: PlaceholderPageComponent, data: { title: 'Usuarios', eyebrow: 'Plataforma' } },
+  {
+    path: 'users',
+    loadComponent: () => import('./pages/users/users.component').then((m) => m.UsersComponent),
+  },
   {
     path: 'subscriptions',
     loadComponent: () =>

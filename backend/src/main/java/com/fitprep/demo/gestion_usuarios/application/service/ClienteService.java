@@ -28,4 +28,9 @@ public class ClienteService implements GestionarClientesUseCase {
     public List<Usuario> listarDeportistas() {
         return usuarioRepository.findByRol(ROL_DEPORTISTA);
     }
+
+    @Override
+    public List<Usuario> listarTodosLosUsuarios() {
+        return usuarioRepository.findAllGlobal();
+    }
 }

@@ -64,6 +64,8 @@ public class SecurityConfig {
                 // Listar TODOS los pedidos del negocio: solo TENANT/ADMIN.
                 .requestMatchers(HttpMethod.GET, "/api/v1/planes").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers("/api/v1/planes/**").authenticated()
+                // Panel del ADMIN sobre usuarios (va antes que la regla /usuarios/**).
+                .requestMatchers("/api/v1/usuarios/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/usuarios/**").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers("/api/v1/negocios/**").hasAnyRole("TENANT", "ADMIN")
                 .anyRequest().permitAll()

@@ -1,0 +1,110 @@
+<div class="p-8 max-w-4xl">
+  <app-page-header
+    eyebrow="Atleta"
+    title="Carrito semanal"
+    description="Revisa tu plan antes de confirmarlo. Podrás pagarlo desde Mis pedidos."
+  >
+    <a actions routerLink="/athlete/plan" mat-stroked-button>
+      <mat-icon>edit</mat-icon> Seguir editando
+    </a>
+  </app-page-header>
+
+  @if (vacio()) {
+    <app-card>
+      <div class="py-14 text-center">
+        <mat-icon class="!size-10 !text-[40px] mb-2 opacity-40">remove_shopping_cart</mat-icon>
+        <p class="text-sm text-muted-foreground mb-4">Tu carrito está vacío.</p>
+        <a routerLink="/athlete/plan" mat-flat-button color="primary">Armar mi plan</a>
+      </div>
+    </app-card>
+  } @else {
+    <div class="grid lg:grid-cols-3 gap-6">
+      <!-- Lista de comidas por día -->
+      <div class="lg:col-span-2 space-y-4">
+        @for (g of grupos(); track g.dia) {
+          <app-card padding="p-0">
+            <div class="px-5 py-3 border-b border-border flex items-center gap-2">
+              <span class="size-1.5 rounded-full bg-brand-500"></span>
+              <h3 class="text-xs font-bold uppercase tracking-widest">{{ diaLabel[g.dia] }}</h3>
+            </div>
+            <div class="divide-y divide-border">
+              @for (c of g.items; track c) {
+                <div class="px-5 py-3 flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="text-sm font-medium truncate">{{ c.plato.nombre }}</div>
+                    <div class="text-xs text-muted-foreground">
+                      {{ tipoLabel[c.tipoComida] }} · ×{{ c.cantidad }} ·
+                      {{ c.plato.calorias * c.cantidad | number: '1.0-0' }} kcal
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 shrink-0">
+                    <span class="text-sm tabular-nums font-medium">
+                      {{ c.plato.precio * c.cantidad | currency: 'USD' }}
+                    </span>
+                    <button mat-icon-button (click)="quitar(c)" aria-label="Quitar">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </app-card>
+        }
+
+        <button mat-button class="!text-destructive" (click)="vaciar()">
+          <mat-icon>delete_sweep</mat-icon> Vaciar carrito
+        </button>
+      </div>
+
+      <!-- Resumen y confirmación -->
+      <app-card class="h-fit lg:sticky lg:top-20">
+        <h3 class="text-sm font-semibold mb-4">Resumen</h3>
+
+        <div class="space-y-2 text-sm mb-4">
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">Comidas</span>
+            <span class="tabular-nums font-medium">{{ totalItems() }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">Calorías</span>
+            <span class="tabular-nums font-medium" [class.text-destructive]="excede()">
+              {{ macros().calorias | number: '1.0-0' }}
+              @if (limiteKcal() != null) { / {{ limiteKcal() | number: '1.0-0' }} }
+              kcal
+            </span>
+          </div>
+          <div class="flex justify-between text-xs text-muted-foreground">
+            <span>P {{ macros().proteinas | number: '1.0-0' }}g</span>
+            <span>C {{ macros().carbohidratos | number: '1.0-0' }}g</span>
+            <span>G {{ macros().grasas | number: '1.0-0' }}g</span>
+          </div>
+        </div>
+
+        @if (excede()) {
+          <div class="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive mb-4">
+            El plan excede tu límite calórico. Ajusta comidas antes de confirmar.
+          </div>
+        }
+
+        <div class="flex items-center justify-between py-3 border-t border-border mb-4">
+          <span class="text-sm font-medium">Total</span>
+          <span class="text-xl font-semibold tabular-nums">{{ macros().precio | currency: 'USD' }}</span>
+        </div>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="w-full !h-11"
+          [disabled]="saving()"
+          (click)="confirmar()"
+        >
+          @if (saving()) {
+            <mat-progress-spinner diameter="18" mode="indeterminate" />
+          } @else {
+            Confirmar plan
+          }
+        </button>
+      </app-card>
+    </div>
+  }
+</div>

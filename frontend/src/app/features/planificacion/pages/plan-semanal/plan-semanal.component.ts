@@ -12,9 +12,11 @@ import { CardComponent } from '../../../../shared/ui/card/card.component';
 import { BadgeComponent } from '../../../../shared/ui/badge/badge.component';
 import { DonutComponent } from '../../../../shared/ui/donut/donut.component';
 import { ProgressBarComponent } from '../../../../shared/ui/progress-bar/progress-bar.component';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { PlanService } from '../../data/plan.service';
-import { calcularMacros, porcentaje } from '../../data/macros';
+import { CarritoService } from '../../data/carrito.service';
+import { porcentaje } from '../../data/macros';
 import {
   ComidaProgramada,
   DiaSemana,
@@ -34,6 +36,7 @@ import { AddComidaDialogComponent } from './add-comida-dialog.component';
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    RouterLink,
     PageHeaderComponent,
     CardComponent,
     BadgeComponent,
@@ -45,19 +48,21 @@ import { AddComidaDialogComponent } from './add-comida-dialog.component';
 export class PlanSemanalComponent {
   private readonly auth = inject(AuthService);
   private readonly planService = inject(PlanService);
+  private readonly carrito = inject(CarritoService);
   private readonly dialog = inject(MatDialog);
   private readonly snackbar = inject(MatSnackBar);
   private readonly router = inject(Router);
 
   readonly user = this.auth.user;
   readonly saving = signal(false);
-  readonly comidas = signal<ComidaProgramada[]>([]);
+  /** Comidas en construcción, compartidas con la pantalla de Carrito. */
+  readonly comidas = this.carrito.comidas;
 
   readonly dias = DIAS_SEMANA;
   readonly diaLabel = DIA_LABEL;
   readonly tipoLabel = TIPO_LABEL;
 
-  readonly macros = computed(() => calcularMacros(this.comidas()));
+  readonly macros = this.carrito.macros;
 
   /** Comidas agrupadas por día para el grid. */
   readonly comidasPorDia = computed(() => {
@@ -95,13 +100,13 @@ export class PlanSemanalComponent {
     const ref = this.dialog.open(AddComidaDialogComponent, { data: { diaSemana: dia } });
     ref.afterClosed().subscribe((comida?: ComidaProgramada) => {
       if (comida) {
-        this.comidas.update((list) => [...list, comida]);
+        this.carrito.agregar(comida);
       }
     });
   }
 
   quitar(comida: ComidaProgramada): void {
-    this.comidas.update((list) => list.filter((c) => c !== comida));
+    this.carrito.quitar(comida);
   }
 
   guardar(): void {
@@ -128,6 +133,7 @@ export class PlanSemanalComponent {
     this.planService.guardar(plan, usuarioId).subscribe({
       next: () => {
         this.saving.set(false);
+        this.carrito.vaciar();
         this.snackbar.open('Plan semanal guardado.', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/athlete/orders']);
       },

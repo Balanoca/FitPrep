@@ -22,9 +22,18 @@ export const ATHLETE_ROUTES: Routes = [
         (m) => m.PlanSemanalComponent,
       ),
   },
-  { path: 'progress', component: PlaceholderPageComponent, data: { title: 'Progreso macros', eyebrow: 'Atleta' } },
-  { path: 'add-meal', component: PlaceholderPageComponent, data: { title: 'Agregar comida', eyebrow: 'Atleta' } },
-  { path: 'cart', component: PlaceholderPageComponent, data: { title: 'Carrito semanal', eyebrow: 'Atleta' } },
+  {
+    path: 'progress',
+    loadComponent: () =>
+      import('../planificacion/pages/progreso/progreso.component').then((m) => m.ProgresoComponent),
+  },
+  // "Agregar comida" se hace dentro del Plan semanal; el menú redirige allí.
+  { path: 'add-meal', redirectTo: 'plan', pathMatch: 'full' },
+  {
+    path: 'cart',
+    loadComponent: () =>
+      import('../planificacion/pages/carrito/carrito.component').then((m) => m.CarritoComponent),
+  },
   { path: 'checkout', component: PlaceholderPageComponent, data: { title: 'Checkout', eyebrow: 'Atleta' } },
   {
     path: 'orders',
