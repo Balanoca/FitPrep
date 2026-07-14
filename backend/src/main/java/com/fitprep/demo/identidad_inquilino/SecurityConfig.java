@@ -56,6 +56,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/insumos/**").hasAnyRole("TENANT", "ADMIN")
                 // Logística (producción y lista de compra): privado del negocio.
                 .requestMatchers("/api/v1/logistica/**").hasAnyRole("TENANT", "ADMIN")
+                // Suscripciones: el panel global es solo ADMIN; el resto TENANT/ADMIN.
+                .requestMatchers("/api/v1/suscripciones/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/suscripciones/**").hasAnyRole("TENANT", "ADMIN")
                 // Listar TODOS los pedidos del negocio: solo TENANT/ADMIN.
                 .requestMatchers(HttpMethod.GET, "/api/v1/planes").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers("/api/v1/planes/**").authenticated()

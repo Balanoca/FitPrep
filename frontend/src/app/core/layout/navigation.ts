@@ -88,6 +88,7 @@ export const NAVIGATION: Record<Role, RoleMeta> = {
         title: 'Negocio',
         items: [
           { to: '/tenant/clients', label: 'Clientes', icon: 'group' },
+          { to: '/tenant/subscription', label: 'Suscripción', icon: 'workspace_premium' },
           { to: '/tenant/reports', label: 'Reportes', icon: 'assessment' },
           { to: '/tenant/settings', label: 'Configuración', icon: 'settings' },
         ],
