@@ -1,0 +1,98 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Plataforma · Inteligencia"
+    title="Reportes"
+    description="Métricas globales de FitPrep: negocios, usuarios e ingresos por suscripción."
+  />
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else {
+    <!-- KPIs -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <app-kpi-card label="MRR" [value]="'S/ ' + (mrr() | number: '1.2-2')" hint="ingreso mensual recurrente" />
+      <app-kpi-card label="ARR proyectado" [value]="'S/ ' + (arr() | number: '1.2-2')" hint="MRR × 12" />
+      <app-kpi-card label="Negocios" [value]="totalNegocios().toString()" />
+      <app-kpi-card label="Deportistas" [value]="totalDeportistas().toString()" [hint]="totalUsuarios() + ' usuarios en total'" />
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6">
+      <!-- Suscripciones por plan -->
+      <app-card>
+        <h3 class="text-sm font-semibold mb-5">Suscripciones por plan</h3>
+        @if (suscripciones().length === 0) {
+          <div class="grid place-items-center py-10 text-center text-muted-foreground text-sm">
+            Aún no hay suscripciones.
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (b of porPlan(); track b.label) {
+              <div>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="text-muted-foreground">{{ b.label }}</span>
+                  <span class="font-medium tabular-nums">{{ b.cantidad }} · {{ b.pct }}%</span>
+                </div>
+                <div class="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                  <div class="h-full rounded-full" [class]="b.color" [style.width.%]="b.pct"></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </app-card>
+
+      <!-- Suscripciones por estado -->
+      <app-card>
+        <h3 class="text-sm font-semibold mb-5">Suscripciones por estado</h3>
+        @if (suscripciones().length === 0) {
+          <div class="grid place-items-center py-10 text-center text-muted-foreground text-sm">
+            Aún no hay suscripciones.
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (b of porEstado(); track b.label) {
+              <div>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="text-muted-foreground">{{ b.label }}</span>
+                  <span class="font-medium tabular-nums">{{ b.cantidad }} · {{ b.pct }}%</span>
+                </div>
+                <div class="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                  <div class="h-full rounded-full" [class]="b.color" [style.width.%]="b.pct"></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </app-card>
+    </div>
+
+    <!-- Ingreso por negocio (su plan vigente) -->
+    <app-card class="mt-6">
+      <h3 class="text-sm font-semibold mb-4">Aporte por negocio</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-[10px] uppercase tracking-widest text-muted-foreground">
+            <tr>
+              <th class="text-left py-2">Negocio</th>
+              <th class="text-left py-2">Plan</th>
+              <th class="text-left py-2">Estado</th>
+              <th class="text-right py-2">S/ / mes</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (s of suscripciones(); track s.id) {
+              <tr>
+                <td class="py-2 font-medium">Negocio #{{ s.negocioId }}</td>
+                <td class="py-2 text-muted-foreground">{{ s.planNombre }}</td>
+                <td class="py-2 text-muted-foreground">{{ s.estado }}</td>
+                <td class="py-2 text-right tabular-nums">S/ {{ s.planPrecioMensual | number: '1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  }
+</div>

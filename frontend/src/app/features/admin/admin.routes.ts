@@ -24,6 +24,10 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.AdminSuscripcionesComponent,
       ),
   },
-  { path: 'reports', component: PlaceholderPageComponent, data: { title: 'Reportes', eyebrow: 'Plataforma' } },
+  {
+    path: 'reports',
+    loadComponent: () =>
+      import('./pages/reports/admin-reports.component').then((m) => m.AdminReportsComponent),
+  },
   { path: 'settings', component: PlaceholderPageComponent, data: { title: 'Configuración', eyebrow: 'Plataforma' } },
 ];

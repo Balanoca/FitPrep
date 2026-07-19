@@ -58,12 +58,15 @@ export class PlanService {
     );
   }
 
-  /** Cambia el estado de pago de un plan (CONFIRMADO, PAGADO, CANCELADO). */
-  cambiarEstado(planId: number, estadoPago: string): Observable<PlanSemanal> {
-    return forkJoin({
-      dto: this.http.patch<PlanSemanalResponseDto>(`${this.base}/${planId}/estado`, { estadoPago }),
-      platos: this.platoService.listar(),
-    }).pipe(map(({ dto, platos }) => PlanMapper.toModel(dto, indexar(platos))));
+  /**
+   * Cambia el estado de pago de un plan (CONFIRMADO, PAGADO, CANCELADO) y
+   * devuelve el nuevo estado. No reconstruye los platos (no hace falta el
+   * catálogo): evita una llamada extra que podría fallar y romper el "confirmar".
+   */
+  cambiarEstado(planId: number, estadoPago: string): Observable<string> {
+    return this.http
+      .patch<PlanSemanalResponseDto>(`${this.base}/${planId}/estado`, { estadoPago })
+      .pipe(map((dto) => dto.estadoPago));
   }
 }
 

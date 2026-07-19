@@ -41,15 +41,13 @@ export const NAVIGATION: Record<Role, RoleMeta> = {
         title: 'Comidas',
         items: [
           { to: '/athlete/add-meal', label: 'Agregar comida', icon: 'add_circle' },
-          { to: '/tenants', label: 'Explorar negocios', icon: 'storefront' },
         ],
       },
       {
         title: 'Pedidos',
         items: [
           { to: '/athlete/cart', label: 'Carrito semanal', icon: 'shopping_cart' },
-          { to: '/athlete/checkout', label: 'Checkout', icon: 'credit_card' },
-          { to: '/athlete/orders', label: 'Historial', icon: 'history' },
+          { to: '/athlete/orders', label: 'Mis pedidos', icon: 'receipt_long' },
         ],
       },
       {
@@ -72,8 +70,6 @@ export const NAVIGATION: Record<Role, RoleMeta> = {
           { to: '/tenant', label: 'Dashboard', icon: 'dashboard' },
           { to: '/tenant/orders', label: 'Pedidos semanales', icon: 'list_alt' },
           { to: '/tenant/production', label: 'Producción diaria', icon: 'factory' },
-          { to: '/tenant/kitchen', label: 'Planeamiento cocina', icon: 'skillet' },
-          { to: '/tenant/delivery', label: 'Entregas', icon: 'local_shipping' },
         ],
       },
       {
@@ -108,7 +104,6 @@ export const NAVIGATION: Record<Role, RoleMeta> = {
           { to: '/admin/users', label: 'Usuarios', icon: 'manage_accounts' },
           { to: '/admin/subscriptions', label: 'Suscripciones', icon: 'receipt_long' },
           { to: '/admin/reports', label: 'Reportes', icon: 'pie_chart' },
-          { to: '/admin/settings', label: 'Configuración', icon: 'tune' },
         ],
       },
     ],

@@ -104,10 +104,12 @@ export class PedidosTenantComponent implements OnInit {
     const id = plan.id;
     this.actualizando.set(id);
     this.planService.cambiarEstado(id, nuevoEstado).subscribe({
-      next: (actualizado) => {
-        this.pedidos.update((list) => list.map((p) => (p.id === id ? actualizado : p)));
+      next: (estadoActualizado) => {
+        this.pedidos.update((list) =>
+          list.map((p) => (p.id === id ? { ...p, estadoPago: estadoActualizado } : p)),
+        );
         this.actualizando.set(null);
-        this.snackbar.open(`Pedido #${id}: ${nuevoEstado.toLowerCase()}.`, 'Cerrar', { duration: 3000 });
+        this.snackbar.open(`Pedido #${id}: ${estadoActualizado.toLowerCase()}.`, 'Cerrar', { duration: 3000 });
       },
       error: (err) => {
         this.actualizando.set(null);

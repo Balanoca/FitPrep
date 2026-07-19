@@ -2,7 +2,7 @@
   <app-page-header
     [eyebrow]="user()?.nombres ? 'Hola, ' + user()?.nombres + ' 👋' : 'Tu panel'"
     title="Tu nutrición en un vistazo"
-    [description]="user()?.objetivoFitness ? 'Objetivo: ' + user()?.objetivoFitness : 'Revisa tus objetivos y planifica tu semana.'"
+    [description]="user()?.objetivoFitness ? 'Objetivo: ' + objetivoLabel(user()?.objetivoFitness) : 'Revisa tus objetivos y planifica tu semana.'"
   >
     <a actions routerLink="/athlete/plan" mat-flat-button color="primary">
       <mat-icon>calendar_month</mat-icon> Ver plan semanal

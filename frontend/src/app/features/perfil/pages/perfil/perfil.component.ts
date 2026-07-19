@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
 import { CardComponent } from '../../../../shared/ui/card/card.component';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { objetivoLabel } from '../../data/objetivo-fitness';
 
 @Component({
   selector: 'app-perfil',
@@ -18,6 +19,7 @@ export class PerfilComponent {
   private readonly auth = inject(AuthService);
 
   readonly user = this.auth.user;
+  readonly objetivoLabel = objetivoLabel;
 
   readonly initials = computed(() => {
     const u = this.user();

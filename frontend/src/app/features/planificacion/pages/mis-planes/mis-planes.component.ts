@@ -85,10 +85,12 @@ export class MisPlanesComponent implements OnInit {
     const id = plan.id;
     this.actualizando.set(id);
     this.planService.cambiarEstado(id, estado).subscribe({
-      next: (actualizado) => {
-        this.planes.update((list) => list.map((p) => (p.id === id ? actualizado : p)));
+      next: (nuevoEstado) => {
+        this.planes.update((list) =>
+          list.map((p) => (p.id === id ? { ...p, estadoPago: nuevoEstado } : p)),
+        );
         this.actualizando.set(null);
-        this.snackbar.open(`Pedido #${id}: ${estado.toLowerCase()}.`, 'Cerrar', { duration: 3000 });
+        this.snackbar.open(`Pedido #${id}: ${nuevoEstado.toLowerCase()}.`, 'Cerrar', { duration: 3000 });
       },
       error: (err) => {
         this.actualizando.set(null);

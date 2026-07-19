@@ -10,6 +10,7 @@ import { KpiCardComponent } from '../../../../shared/ui/kpi-card/kpi-card.compon
 import { DonutComponent } from '../../../../shared/ui/donut/donut.component';
 import { ProgressBarComponent } from '../../../../shared/ui/progress-bar/progress-bar.component';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { objetivoLabel } from '../../../perfil/data/objetivo-fitness';
 
 @Component({
   selector: 'app-athlete-dashboard',
@@ -32,6 +33,7 @@ export class AthleteDashboardComponent {
   private readonly auth = inject(AuthService);
 
   readonly user = this.auth.user;
+  readonly objetivoLabel = objetivoLabel;
 
   readonly tieneObjetivos = computed(() => (this.user()?.requerimientoKcal ?? null) != null);
 

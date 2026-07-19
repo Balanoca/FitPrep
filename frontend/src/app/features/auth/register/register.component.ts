@@ -15,6 +15,7 @@ import { CocinaPublica } from '../../../core/models/user.model';
 import { NegocioService } from '../../negocio/data/negocio.service';
 import { PlatoService } from '../../catalogo/data/plato.service';
 import { Plato } from '../../catalogo/data/plato.model';
+import { OBJETIVOS_FITNESS } from '../../perfil/data/objetivo-fitness';
 
 type Modo = 'atleta' | 'negocio';
 
@@ -52,11 +53,7 @@ export class RegisterComponent {
   readonly platosPreview = signal<Plato[]>([]);
   readonly cargandoPreview = signal(false);
 
-  readonly objetivos = [
-    { value: 'PERDIDA_GRASA', label: 'Pérdida de grasa' },
-    { value: 'GANANCIA_MUSCULAR', label: 'Ganancia muscular' },
-    { value: 'MANTENIMIENTO', label: 'Mantenimiento' },
-  ];
+  readonly objetivos = OBJETIVOS_FITNESS;
 
   readonly atletaForm = this.fb.nonNullable.group({
     negocioId: [null as number | null, Validators.required],
