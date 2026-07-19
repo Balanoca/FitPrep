@@ -1,0 +1,61 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Plataforma"
+    title="Usuarios"
+    [description]="usuarios().length + ' usuarios en FitPrep'"
+  />
+
+  <div class="grid sm:grid-cols-3 gap-5 mb-8">
+    <app-kpi-card label="Total usuarios" [value]="usuarios().length.toString()" />
+    <app-kpi-card label="Deportistas" [value]="atletas().toString()" />
+    <app-kpi-card label="Cuentas de negocio" [value]="negocios().toString()" hint="tenant + admin" />
+  </div>
+
+  <app-card padding="p-0">
+    <div class="p-4 border-b border-border flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2 px-3 h-9 rounded-md bg-muted text-sm flex-1 min-w-[200px] max-w-md">
+        <mat-icon class="!size-4 !text-[18px] text-muted-foreground">search</mat-icon>
+        <input
+          class="bg-transparent flex-1 outline-none"
+          placeholder="Buscar por nombre o correo..."
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+        />
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="grid place-items-center py-20">
+        <mat-progress-spinner diameter="36" mode="indeterminate" />
+      </div>
+    } @else if (filtrados().length === 0) {
+      <div class="grid place-items-center py-20 text-center text-muted-foreground">
+        <mat-icon class="!size-10 !text-[40px] mb-2 opacity-40">group_off</mat-icon>
+        <div class="text-sm">No hay usuarios que coincidan.</div>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-surface text-[10px] uppercase tracking-widest text-muted-foreground">
+            <tr>
+              <th class="text-left px-5 py-3">Usuario</th>
+              <th class="text-left px-5 py-3">Correo</th>
+              <th class="text-left px-5 py-3">Rol</th>
+              <th class="text-right px-5 py-3">Negocio</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (u of filtrados(); track u.id) {
+              <tr class="hover:bg-muted/40">
+                <td class="px-5 py-3 font-medium">{{ u.nombres }} {{ u.apellidos }}</td>
+                <td class="px-5 py-3 text-muted-foreground">{{ u.email }}</td>
+                <td class="px-5 py-3"><app-badge [tone]="tono(u.rol)">{{ rolLabel(u.rol) }}</app-badge></td>
+                <td class="px-5 py-3 text-right tabular-nums text-muted-foreground">#{{ u.negocioId }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </app-card>
+</div>

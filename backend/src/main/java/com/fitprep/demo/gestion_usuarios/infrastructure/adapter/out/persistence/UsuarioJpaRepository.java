@@ -33,6 +33,13 @@ interface UsuarioJpaRepository extends JpaRepository<UsuarioEntity, Long> {
     Optional<UsuarioEntity> findByEmailGlobal(@Param("email") String email);
 
     /**
+     * Todos los usuarios de todas las cocinas (para el panel del ADMIN). SQL
+     * nativo: no aplica el filtro de @TenantId.
+     */
+    @Query(value = "SELECT * FROM usuario ORDER BY negocio_id, rol, nombres", nativeQuery = true)
+    List<UsuarioEntity> findAllGlobal();
+
+    /**
      * Alta de usuario vía SQL nativo (registro cross-tenant): evita la validación
      * de {@code @TenantId} que exige que negocio_id == tenant de la sesión.
      * Devuelve el id generado.

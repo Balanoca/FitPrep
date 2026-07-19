@@ -1,0 +1,60 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Plataforma"
+    title="Dashboard general"
+    description="Vista global de FitPrep: negocios, clientes e ingresos por suscripción."
+  />
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else {
+    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+      <app-kpi-card label="Negocios" [value]="totalNegocios().toString()" hint="cocinas registradas" />
+      <app-kpi-card label="Deportistas" [value]="totalDeportistas().toString()" hint="clientes en total" />
+      <app-kpi-card label="Suscripciones vigentes" [value]="suscripcionesVigentes().toString()" />
+      <app-kpi-card
+        label="Ingreso mensual recurrente"
+        [value]="'S/ ' + (mrr() | number: '1.2-2')"
+        hint="MRR de planes vigentes"
+      />
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-5">
+      <app-card>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold">Negocios</h3>
+          <a routerLink="/admin/businesses" class="text-xs text-brand-600 font-medium">Ver todos</a>
+        </div>
+        <div class="space-y-3">
+          @for (n of negocios(); track n.id) {
+            <div class="flex items-center justify-between text-sm">
+              <span class="font-medium">{{ n.nombreComercial }}</span>
+              <span class="text-xs text-muted-foreground">
+                {{ n.totalDeportistas }} deportistas · {{ n.totalPlatos }} platos
+              </span>
+            </div>
+          }
+        </div>
+      </app-card>
+
+      <app-card>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold">Suscripciones</h3>
+          <a routerLink="/admin/subscriptions" class="text-xs text-brand-600 font-medium">Ver todas</a>
+        </div>
+        <div class="space-y-3">
+          @for (s of suscripciones(); track s.id) {
+            <div class="flex items-center justify-between text-sm">
+              <span class="font-medium">Negocio #{{ s.negocioId }}</span>
+              <span class="text-xs text-muted-foreground">
+                {{ s.planNombre }} · S/ {{ s.planPrecioMensual | number: '1.2-2' }}/mes
+              </span>
+            </div>
+          }
+        </div>
+      </app-card>
+    </div>
+  }
+</div>

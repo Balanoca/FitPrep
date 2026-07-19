@@ -14,3 +14,14 @@ export interface ActualizarNegocioRequest {
   nombreComercial: string;
   telefono: string | null;
 }
+
+/** Resumen de un negocio para el panel del ADMIN (GET /negocios/admin/todos). */
+export interface NegocioResumen {
+  id: number;
+  nombreComercial: string;
+  slug: string;
+  estado: string;
+  fechaRegistro: string;
+  totalDeportistas: number;
+  totalPlatos: number;
+}

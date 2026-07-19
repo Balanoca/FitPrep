@@ -52,6 +52,11 @@ export const TENANT_ROUTES: Routes = [
       ),
   },
   {
+    path: 'subscription',
+    loadComponent: () =>
+      import('../suscripciones/pages/suscripcion/suscripcion.component').then((m) => m.SuscripcionComponent),
+  },
+  {
     path: 'reports',
     loadComponent: () =>
       import('../reportes/pages/reportes/reportes.component').then((m) => m.ReportesComponent),

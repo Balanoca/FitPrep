@@ -45,6 +45,13 @@ public class UsuarioPersistenceAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
+    public List<Usuario> findAllGlobal() {
+        return jpaRepository.findAllGlobal().stream()
+                .map(UsuarioMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Usuario save(Usuario usuario) {
         UsuarioEntity saved = jpaRepository.save(UsuarioMapper.toEntity(usuario));
         return UsuarioMapper.toDomain(saved);

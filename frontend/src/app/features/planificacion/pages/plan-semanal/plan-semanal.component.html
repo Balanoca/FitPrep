@@ -4,6 +4,10 @@
     title="Tu plan semanal"
     description="Agrega comidas a cada día. Los macros se actualizan al instante."
   >
+    <a actions routerLink="/athlete/cart" mat-stroked-button>
+      <mat-icon>shopping_cart</mat-icon>
+      Ver carrito ({{ comidas().length }})
+    </a>
     <button actions mat-flat-button color="primary" (click)="guardar()" [disabled]="saving()">
       @if (saving()) {
         <mat-progress-spinner diameter="18" mode="indeterminate" />

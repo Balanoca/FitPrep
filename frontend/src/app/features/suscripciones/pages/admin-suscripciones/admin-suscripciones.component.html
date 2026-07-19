@@ -1,0 +1,46 @@
+<div class="p-8">
+  <app-page-header
+    eyebrow="Plataforma"
+    title="Suscripciones"
+    description="Estado de la suscripción de cada negocio en FitPrep."
+  />
+
+  <div class="grid sm:grid-cols-3 gap-5 mb-8">
+    <app-kpi-card label="Negocios" [value]="suscripciones().length.toString()" />
+    <app-kpi-card label="Suscripciones vigentes" [value]="activas().toString()" />
+    <app-kpi-card label="Ingreso mensual recurrente" [value]="'S/ ' + (mrr() | number: '1.2-2')" hint="MRR de planes vigentes" />
+  </div>
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else {
+    <app-card padding="p-0">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-surface text-[10px] uppercase tracking-widest text-muted-foreground">
+            <tr>
+              <th class="text-left px-5 py-3">Negocio</th>
+              <th class="text-left px-5 py-3">Plan</th>
+              <th class="text-right px-5 py-3">Precio / mes</th>
+              <th class="text-left px-5 py-3">Estado</th>
+              <th class="text-left px-5 py-3">Vence</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (s of suscripciones(); track s.id) {
+              <tr class="hover:bg-muted/40">
+                <td class="px-5 py-3 font-medium">Negocio #{{ s.negocioId }}</td>
+                <td class="px-5 py-3">{{ s.planNombre }}</td>
+                <td class="px-5 py-3 text-right tabular-nums">S/ {{ s.planPrecioMensual | number: '1.2-2' }}</td>
+                <td class="px-5 py-3"><app-badge [tone]="tono(s.estado)">{{ s.estado }}</app-badge></td>
+                <td class="px-5 py-3 text-muted-foreground">{{ s.fechaVencimiento | date: 'mediumDate' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  }
+</div>

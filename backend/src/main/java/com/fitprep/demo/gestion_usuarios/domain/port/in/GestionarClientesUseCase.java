@@ -12,4 +12,7 @@ public interface GestionarClientesUseCase {
 
     /** Deportistas (rol ATHLETE) del negocio activo. */
     List<Usuario> listarDeportistas();
+
+    /** Todos los usuarios de la plataforma (panel del ADMIN). */
+    List<Usuario> listarTodosLosUsuarios();
 }

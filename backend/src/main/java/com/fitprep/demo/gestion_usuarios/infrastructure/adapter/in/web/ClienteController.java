@@ -3,6 +3,7 @@ package com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web;
 import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.GestionarClientesUseCase;
 import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.ClienteResponse;
+import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.UsuarioAdminResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,23 @@ public class ClienteController {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(clientes);
+    }
+
+    /** Panel del ADMIN: todos los usuarios de la plataforma. */
+    @GetMapping("/admin/todos")
+    public ResponseEntity<List<UsuarioAdminResponse>> listarTodos() {
+        List<UsuarioAdminResponse> usuarios = gestionarClientes.listarTodosLosUsuarios().stream()
+                .map(u -> UsuarioAdminResponse.builder()
+                        .id(u.getId())
+                        .negocioId(u.getNegocioId())
+                        .nombres(u.getNombres())
+                        .apellidos(u.getApellidos())
+                        .email(u.getEmail())
+                        .rol(u.getRol())
+                        .objetivoFitness(u.getObjetivoFitness())
+                        .build())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(usuarios);
     }
 
     private ClienteResponse mapToResponse(Usuario usuario) {

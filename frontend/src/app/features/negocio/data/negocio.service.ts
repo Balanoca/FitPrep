@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { CocinaPublica } from '../../../core/models/user.model';
-import { ActualizarNegocioRequest, Negocio } from './negocio.model';
+import { ActualizarNegocioRequest, Negocio, NegocioResumen } from './negocio.model';
 
 /** Acceso a los datos del propio negocio (tenant). */
 @Injectable({ providedIn: 'root' })
@@ -23,5 +23,10 @@ export class NegocioService {
 
   actualizarMiNegocio(request: ActualizarNegocioRequest): Observable<Negocio> {
     return this.http.put<Negocio>(`${this.base}/mi-negocio`, request);
+  }
+
+  /** Panel del ADMIN: todos los negocios con sus conteos. */
+  listarTodosAdmin(): Observable<NegocioResumen[]> {
+    return this.http.get<NegocioResumen[]>(`${this.base}/admin/todos`);
   }
 }

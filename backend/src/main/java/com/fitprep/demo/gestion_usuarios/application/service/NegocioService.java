@@ -1,10 +1,13 @@
 package com.fitprep.demo.gestion_usuarios.application.service;
 
 import com.fitprep.demo.gestion_usuarios.domain.model.Negocio;
+import com.fitprep.demo.gestion_usuarios.domain.model.NegocioResumen;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.GestionarNegocioUseCase;
 import com.fitprep.demo.gestion_usuarios.domain.port.out.NegocioRepositoryPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Caso de uso de gestión del negocio (tenant).
@@ -34,5 +37,10 @@ public class NegocioService implements GestionarNegocioUseCase {
         negocio.actualizarDatos(command.nombreComercial(), command.telefono());
 
         return negocioRepository.save(negocio);
+    }
+
+    @Override
+    public List<NegocioResumen> listarResumenNegocios() {
+        return negocioRepository.findAllResumen();
     }
 }

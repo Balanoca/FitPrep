@@ -1,6 +1,7 @@
 package com.fitprep.demo.gestion_usuarios.domain.port.out;
 
 import com.fitprep.demo.gestion_usuarios.domain.model.Negocio;
+import com.fitprep.demo.gestion_usuarios.domain.model.NegocioResumen;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,9 @@ public interface NegocioRepositoryPort {
 
     /** Todas las cocinas en estado ACTIVO, para el catálogo público de selección. */
     List<Negocio> findAllActivos();
+
+    /** Todos los negocios con conteos de deportistas y platos (panel ADMIN). */
+    List<NegocioResumen> findAllResumen();
 
     Negocio save(Negocio negocio);
 }

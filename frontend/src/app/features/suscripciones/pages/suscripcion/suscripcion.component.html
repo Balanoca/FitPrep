@@ -1,0 +1,110 @@
+<div class="p-8 max-w-5xl">
+  <app-page-header
+    eyebrow="Negocio"
+    title="Suscripción"
+    description="Tu plan en FitPrep. Paga tu cuota mensual para mantener la cocina activa."
+  />
+
+  @if (loading()) {
+    <div class="grid place-items-center py-20">
+      <mat-progress-spinner diameter="36" mode="indeterminate" />
+    </div>
+  } @else if (suscripcion(); as s) {
+    <!-- Estado actual -->
+    <app-card class="mb-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <h3 class="text-lg font-semibold">Plan {{ s.planNombre }}</h3>
+            <app-badge [tone]="tonoEstado()">{{ s.estado }}</app-badge>
+          </div>
+          <p class="text-sm text-muted-foreground">
+            S/ {{ s.planPrecioMensual | number: '1.2-2' }} / mes ·
+            @if (s.vigente) {
+              vigente hasta <strong>{{ s.fechaVencimiento | date: 'longDate' }}</strong>
+            } @else {
+              <span class="text-rose-600 font-medium">venció el {{ s.fechaVencimiento | date: 'longDate' }}</span>
+            }
+          </p>
+        </div>
+        <button mat-flat-button color="primary" class="!h-11" [disabled]="procesando()" (click)="pagar()">
+          @if (procesando()) {
+            <mat-progress-spinner diameter="18" mode="indeterminate" />
+          } @else {
+            <ng-container>
+              <mat-icon>payments</mat-icon>
+              Pagar mes (S/ {{ s.planPrecioMensual | number: '1.2-2' }})
+            </ng-container>
+          }
+        </button>
+      </div>
+      @if (!s.vigente) {
+        <div class="mt-4 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          Tu suscripción está vencida. Paga la cuota para reactivar tu cocina.
+        </div>
+      }
+    </app-card>
+
+    <!-- Planes disponibles -->
+    <h3 class="text-sm font-semibold mb-3">Planes disponibles</h3>
+    <div class="grid sm:grid-cols-3 gap-4 mb-8">
+      @for (plan of planes(); track plan.id) {
+        <app-card [class]="esPlanActual(plan) ? '!border-brand-500 !border-2' : ''">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="font-semibold">{{ plan.nombre }}</h4>
+            @if (esPlanActual(plan)) {
+              <app-badge tone="brand">Actual</app-badge>
+            }
+          </div>
+          <div class="text-2xl font-semibold tabular-nums mb-1">
+            S/ {{ plan.precioMensual | number: '1.2-2' }}
+            <span class="text-xs font-normal text-muted-foreground">/ mes</span>
+          </div>
+          <ul class="text-xs text-muted-foreground space-y-1 my-3">
+            <li>Platos: {{ plan.maxPlatos ?? 'ilimitados' }}</li>
+            <li>Clientes: {{ plan.maxClientes ?? 'ilimitados' }}</li>
+          </ul>
+          <button
+            mat-stroked-button
+            class="w-full"
+            [disabled]="procesando() || esPlanActual(plan)"
+            (click)="elegirPlan(plan)"
+          >
+            {{ esPlanActual(plan) ? 'Plan actual' : 'Elegir ' + plan.nombre }}
+          </button>
+        </app-card>
+      }
+    </div>
+
+    <!-- Historial de pagos -->
+    <h3 class="text-sm font-semibold mb-3">Historial de pagos</h3>
+    <app-card padding="p-0">
+      @if (pagos().length === 0) {
+        <div class="py-10 text-center text-sm text-muted-foreground">Aún no hay pagos registrados.</div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-surface text-[10px] uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th class="text-left px-5 py-3">Fecha</th>
+                <th class="text-left px-5 py-3">Período cubierto</th>
+                <th class="text-right px-5 py-3">Monto</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (p of pagos(); track p.id) {
+                <tr class="hover:bg-muted/40">
+                  <td class="px-5 py-3">{{ p.fechaPago | date: 'medium' }}</td>
+                  <td class="px-5 py-3 text-muted-foreground">
+                    {{ p.periodoDesde | date: 'mediumDate' }} → {{ p.periodoHasta | date: 'mediumDate' }}
+                  </td>
+                  <td class="px-5 py-3 text-right tabular-nums font-medium">S/ {{ p.monto | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </app-card>
+  }
+</div>

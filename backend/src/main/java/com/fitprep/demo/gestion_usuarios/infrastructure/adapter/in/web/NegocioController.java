@@ -8,6 +8,7 @@ import com.fitprep.demo.gestion_usuarios.domain.port.in.GestionarNegocioUseCase.
 import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.ActualizarNegocioRequest;
 import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.CocinaPublicaResponse;
 import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.NegocioResponse;
+import com.fitprep.demo.gestion_usuarios.infrastructure.adapter.in.web.dto.NegocioResumenResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,6 +48,23 @@ public class NegocioController {
                         .build())
                 .toList();
         return ResponseEntity.ok(cocinas);
+    }
+
+    /** Panel del ADMIN: todos los negocios con sus conteos. */
+    @GetMapping("/admin/todos")
+    public ResponseEntity<List<NegocioResumenResponse>> listarTodos() {
+        List<NegocioResumenResponse> negocios = gestionarNegocio.listarResumenNegocios().stream()
+                .map(r -> NegocioResumenResponse.builder()
+                        .id(r.getId())
+                        .nombreComercial(r.getNombreComercial())
+                        .slug(r.getSlug())
+                        .estado(r.getEstado())
+                        .fechaRegistro(r.getFechaRegistro())
+                        .totalDeportistas(r.getTotalDeportistas())
+                        .totalPlatos(r.getTotalPlatos())
+                        .build())
+                .toList();
+        return ResponseEntity.ok(negocios);
     }
 
     /** Datos del negocio del tenant autenticado. */
