@@ -1,15 +1,38 @@
 @if (meta(); as m) {
-  <aside class="hidden lg:flex w-64 shrink-0 flex-col border-r border-border bg-surface h-screen sticky top-0">
-    <!-- Cabecera / marca -->
-    <div class="px-4 py-4 border-b border-border">
-      <div class="flex items-center gap-2.5">
-        <div class="size-9 rounded-lg bg-brand-500 grid place-items-center shrink-0">
-          <mat-icon class="text-white !size-4 !text-[16px] leading-none">{{ m.icon }}</mat-icon>
-        </div>
-        <div class="min-w-0">
-          <div class="text-sm font-semibold tracking-tight truncate">{{ m.label }}</div>
-          <div class="text-[10px] text-muted-foreground uppercase tracking-widest truncate">{{ m.sub }}</div>
-        </div>
+  <aside
+    class="hidden lg:flex shrink-0 flex-col border-r border-border bg-surface h-screen sticky top-0 transition-all duration-200"
+    [class]="collapsed() ? 'w-16' : 'w-64'"
+  >
+    <!-- Cabecera / marca + toggle -->
+    <div class="px-3 py-4 border-b border-border">
+      <div class="flex items-center gap-2.5" [class.justify-center]="collapsed()">
+        @if (collapsed()) {
+          <!-- Contraído: el ícono del rol es el botón para expandir -->
+          <button
+            (click)="toggle()"
+            title="Expandir menú"
+            aria-label="Expandir menú"
+            class="size-9 rounded-lg bg-brand-500 grid place-items-center shrink-0 hover:bg-brand-600 transition-colors"
+          >
+            <mat-icon class="text-white !size-4 !text-[16px] leading-none">{{ m.icon }}</mat-icon>
+          </button>
+        } @else {
+          <div class="size-9 rounded-lg bg-brand-500 grid place-items-center shrink-0">
+            <mat-icon class="text-white !size-4 !text-[16px] leading-none">{{ m.icon }}</mat-icon>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-semibold tracking-tight truncate">{{ m.label }}</div>
+            <div class="text-[10px] text-muted-foreground uppercase tracking-widest truncate">{{ m.sub }}</div>
+          </div>
+          <button
+            (click)="toggle()"
+            title="Contraer menú"
+            aria-label="Contraer menú"
+            class="size-7 grid place-items-center rounded-md hover:bg-muted text-muted-foreground shrink-0"
+          >
+            <mat-icon class="!size-4 !text-[18px]">menu_open</mat-icon>
+          </button>
+        }
       </div>
     </div>
 
@@ -17,9 +40,11 @@
     <nav class="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
       @for (group of m.groups; track group.title) {
         <div>
-          <div class="px-2 mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            {{ group.title }}
-          </div>
+          @if (!collapsed()) {
+            <div class="px-2 mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              {{ group.title }}
+            </div>
+          }
           <ul class="space-y-0.5">
             @for (item of group.items; track item.to) {
               <li>
@@ -27,10 +52,14 @@
                   [routerLink]="item.to"
                   routerLinkActive="bg-brand-50 text-brand-700 font-medium"
                   [routerLinkActiveOptions]="{ exact: item.to.split('/').length <= 2 }"
-                  class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] text-foreground/70 hover:bg-muted hover:text-foreground transition-colors"
+                  [title]="collapsed() ? item.label : ''"
+                  class="flex items-center gap-2.5 py-1.5 rounded-md text-[13px] text-foreground/70 hover:bg-muted hover:text-foreground transition-colors"
+                  [class]="collapsed() ? 'justify-center px-2' : 'px-2.5'"
                 >
                   <mat-icon class="!size-4 !text-[18px] shrink-0">{{ item.icon }}</mat-icon>
-                  <span class="truncate">{{ item.label }}</span>
+                  @if (!collapsed()) {
+                    <span class="truncate">{{ item.label }}</span>
+                  }
                 </a>
               </li>
             }
@@ -41,22 +70,38 @@
 
     <!-- Usuario -->
     <div class="border-t border-border p-3">
-      <div class="flex items-center gap-2.5 px-1.5 py-1.5 rounded-md">
-        <div class="size-8 rounded-full bg-brand-100 grid place-items-center text-[11px] font-semibold text-brand-700 shrink-0">
+      <div class="flex items-center gap-2.5 px-1.5 py-1.5 rounded-md" [class.justify-center]="collapsed()">
+        <div
+          class="size-8 rounded-full bg-brand-100 grid place-items-center text-[11px] font-semibold text-brand-700 shrink-0"
+          [title]="collapsed() ? (user()?.nombres + ' ' + user()?.apellidos) : ''"
+        >
           {{ initials() }}
         </div>
-        <div class="min-w-0 flex-1">
-          <div class="text-[12px] font-medium truncate">{{ user()?.nombres }} {{ user()?.apellidos }}</div>
-          <div class="text-[10px] text-muted-foreground truncate">{{ user()?.email }}</div>
-        </div>
+        @if (!collapsed()) {
+          <div class="min-w-0 flex-1">
+            <div class="text-[12px] font-medium truncate">{{ user()?.nombres }} {{ user()?.apellidos }}</div>
+            <div class="text-[10px] text-muted-foreground truncate">{{ user()?.email }}</div>
+          </div>
+          <button
+            (click)="logout()"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+            class="size-7 grid place-items-center rounded-md hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-colors"
+          >
+            <mat-icon class="!size-4 !text-[18px]">logout</mat-icon>
+          </button>
+        }
+      </div>
+      @if (collapsed()) {
         <button
           (click)="logout()"
-          title="Salir"
-          class="size-7 grid place-items-center rounded-md hover:bg-muted text-muted-foreground"
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+          class="mt-1 w-full grid place-items-center py-1.5 rounded-md hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-colors"
         >
           <mat-icon class="!size-4 !text-[18px]">logout</mat-icon>
         </button>
-      </div>
+      }
     </div>
   </aside>
 }

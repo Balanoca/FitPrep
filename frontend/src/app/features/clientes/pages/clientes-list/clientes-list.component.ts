@@ -9,6 +9,7 @@ import { CardComponent } from '../../../../shared/ui/card/card.component';
 import { BadgeComponent } from '../../../../shared/ui/badge/badge.component';
 import { ClienteService } from '../../data/cliente.service';
 import { Cliente } from '../../data/cliente.model';
+import { objetivoLabel } from '../../../perfil/data/objetivo-fitness';
 
 @Component({
   selector: 'app-clientes-list',
@@ -59,16 +60,5 @@ export class ClientesListComponent implements OnInit {
     return `${c.nombres?.[0] ?? ''}${c.apellidos?.[0] ?? ''}`.toUpperCase();
   }
 
-  objetivoLabel(objetivo: string | null): string {
-    switch (objetivo) {
-      case 'PERDIDA_GRASA':
-        return 'Pérdida de grasa';
-      case 'GANANCIA_MUSCULAR':
-        return 'Ganancia muscular';
-      case 'MANTENIMIENTO':
-        return 'Mantenimiento';
-      default:
-        return '—';
-    }
-  }
+  readonly objetivoLabel = objetivoLabel;
 }

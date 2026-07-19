@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
 import { CardComponent } from '../../../../shared/ui/card/card.component';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { OBJETIVOS_FITNESS } from '../../data/objetivo-fitness';
 
 @Component({
   selector: 'app-objetivos',
@@ -37,11 +38,7 @@ export class ObjetivosComponent implements OnInit {
 
   readonly saving = signal(false);
 
-  readonly objetivosFitness = [
-    { value: 'PERDIDA_GRASA', label: 'Pérdida de grasa' },
-    { value: 'GANANCIA_MUSCULAR', label: 'Ganancia muscular' },
-    { value: 'MANTENIMIENTO', label: 'Mantenimiento' },
-  ];
+  readonly objetivosFitness = OBJETIVOS_FITNESS;
 
   readonly form = this.fb.nonNullable.group({
     objetivoFitness: ['MANTENIMIENTO' as string | null],
