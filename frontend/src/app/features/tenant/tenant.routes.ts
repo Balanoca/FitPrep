@@ -39,7 +39,11 @@ export const TENANT_ROUTES: Routes = [
     loadComponent: () =>
       import('../catalogo/pages/plato-form/plato-form.component').then((m) => m.PlatoFormComponent),
   },
-  { path: 'ingredients', component: PlaceholderPageComponent, data: { title: 'Ingredientes', eyebrow: 'Catálogo' } },
+  {
+    path: 'ingredients',
+    loadComponent: () =>
+      import('../insumos/pages/insumo-list/insumo-list.component').then((m) => m.InsumoListComponent),
+  },
   {
     path: 'clients',
     loadComponent: () =>

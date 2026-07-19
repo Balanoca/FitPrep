@@ -83,6 +83,72 @@
             </mat-form-field>
           </div>
         </app-card>
+
+        <!-- Receta / insumos -->
+        <app-card>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm font-semibold">Receta (insumos por plato)</h3>
+            <button type="button" mat-stroked-button (click)="agregarLinea()">
+              <mat-icon>add</mat-icon> Añadir insumo
+            </button>
+          </div>
+          <p class="text-xs text-muted-foreground mb-4">
+            Cantidad de cada insumo para preparar <strong>una</strong> unidad de este plato. Se usa
+            para calcular cuánto comprar según los pedidos de la semana.
+          </p>
+
+          @if (insumos().length === 0) {
+            <div class="text-sm text-muted-foreground rounded-md bg-muted/50 px-3 py-2">
+              Aún no tienes insumos. Créalos en
+              <a routerLink="/tenant/ingredients" class="text-brand-600 font-medium">Insumos</a>
+              para armar la receta.
+            </div>
+          } @else if (lineasReceta().length === 0) {
+            <div class="text-sm text-muted-foreground">
+              Sin insumos en la receta. Usa “Añadir insumo”.
+            </div>
+          } @else {
+            <div class="space-y-3">
+              @for (linea of lineasReceta(); track $index) {
+                <div class="flex items-start gap-3">
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Insumo</mat-label>
+                    <mat-select
+                      [value]="linea.insumoId"
+                      (selectionChange)="setLineaInsumo($index, $event.value)"
+                    >
+                      @for (ins of insumos(); track ins.id) {
+                        <mat-option [value]="ins.id">{{ ins.nombre }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-40">
+                    <mat-label>Cantidad</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      step="0.01"
+                      [value]="linea.cantidad"
+                      (input)="setLineaCantidad($index, +$any($event.target).value)"
+                    />
+                    <span matTextSuffix>{{ unidadDe(linea.insumoId) }}</span>
+                  </mat-form-field>
+
+                  <button
+                    type="button"
+                    mat-icon-button
+                    class="!mt-1"
+                    (click)="quitarLinea($index)"
+                    aria-label="Quitar insumo"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </app-card>
       </div>
 
       <!-- Panel lateral -->

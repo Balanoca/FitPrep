@@ -6,3 +6,13 @@ export interface ProduccionItemDto {
   tipoComida: string;
   cantidadTotal: number;
 }
+
+/** Contrato HTTP del backend (ListaCompraItemResponse). */
+export interface ListaCompraItemDto {
+  insumoId: number;
+  insumoNombre: string;
+  unidad: string;
+  cantidadTotal: number;
+  precioUnitario: number | null;
+  costoEstimado: number | null;
+}

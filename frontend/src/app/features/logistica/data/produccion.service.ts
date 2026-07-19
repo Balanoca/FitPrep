@@ -3,8 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { ProduccionItem } from './produccion.model';
-import { ProduccionItemDto } from './produccion.dto';
+import { ListaCompraItem, ProduccionItem } from './produccion.model';
+import { ListaCompraItemDto, ProduccionItemDto } from './produccion.dto';
 
 /** Acceso al reporte consolidado de producción de cocina. */
 @Injectable({ providedIn: 'root' })
@@ -17,6 +17,14 @@ export class ProduccionService {
     const params = new HttpParams().set('fechaSemana', this.toIsoDate(fechaSemana));
     return this.http
       .get<ProduccionItemDto[]>(`${this.base}/produccion`, { params })
+      .pipe(map((dtos) => dtos.map((d) => ({ ...d }))));
+  }
+
+  /** Lista de compra de insumos consolidada de la semana. */
+  obtenerListaCompra(fechaSemana: Date): Observable<ListaCompraItem[]> {
+    const params = new HttpParams().set('fechaSemana', this.toIsoDate(fechaSemana));
+    return this.http
+      .get<ListaCompraItemDto[]>(`${this.base}/insumos`, { params })
       .pipe(map((dtos) => dtos.map((d) => ({ ...d }))));
   }
 

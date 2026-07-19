@@ -71,6 +71,13 @@ export class AuthService {
     );
   }
 
+  /** Cambia la cocina del usuario en sesión y refresca su perfil. */
+  cambiarCocina(negocioId: number): Observable<AuthUser> {
+    return this.http.put<AuthUser>(`${this.base}/mi-cocina`, { negocioId }).pipe(
+      tap((user) => this._user.set(user)),
+    );
+  }
+
   logout(): void {
     this.tokenStorage.clear();
     this._user.set(null);

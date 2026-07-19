@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -13,7 +14,7 @@ import { CardComponent } from '../../../../shared/ui/card/card.component';
 import { BadgeComponent } from '../../../../shared/ui/badge/badge.component';
 import { KpiCardComponent } from '../../../../shared/ui/kpi-card/kpi-card.component';
 import { ProduccionService } from '../../data/produccion.service';
-import { ProduccionItem, ProduccionPorDia } from '../../data/produccion.model';
+import { ListaCompraItem, ProduccionItem, ProduccionPorDia } from '../../data/produccion.model';
 import { DIAS_SEMANA, DIA_LABEL, TIPO_LABEL, DiaSemana, TipoComida } from '../../../planificacion/data/plan.model';
 
 @Component({
@@ -21,6 +22,7 @@ import { DIAS_SEMANA, DIA_LABEL, TIPO_LABEL, DiaSemana, TipoComida } from '../..
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    DecimalPipe,
     MatIconModule,
     MatButtonModule,
     MatDatepickerModule,
@@ -42,11 +44,17 @@ export class ProduccionComponent implements OnInit {
   readonly loading = signal(false);
   readonly fecha = signal<Date>(this.lunesDeEstaSemana());
   readonly items = signal<ProduccionItem[]>([]);
+  readonly listaCompra = signal<ListaCompraItem[]>([]);
 
   readonly totalUnidades = computed(() =>
     this.items().reduce((sum, i) => sum + i.cantidadTotal, 0),
   );
   readonly platosDistintos = computed(() => new Set(this.items().map((i) => i.platoId)).size);
+
+  /** Costo total estimado de la compra (suma de las líneas con precio). */
+  readonly costoTotalCompra = computed(() =>
+    this.listaCompra().reduce((sum, i) => sum + (i.costoEstimado ?? 0), 0),
+  );
 
   /** Reporte agrupado y ordenado por día de la semana. */
   readonly porDia = computed<ProduccionPorDia[]>(() => {
@@ -88,6 +96,12 @@ export class ProduccionComponent implements OnInit {
         this.loading.set(false);
         this.snackbar.open('No se pudo cargar el reporte de producción.', 'Cerrar', { duration: 4000 });
       },
+    });
+
+    // Lista de compra de la misma semana (carga independiente).
+    this.produccionService.obtenerListaCompra(this.fecha()).subscribe({
+      next: (lista) => this.listaCompra.set(lista),
+      error: () => this.listaCompra.set([]),
     });
   }
 

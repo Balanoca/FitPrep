@@ -1,0 +1,49 @@
+<div class="p-8 max-w-2xl">
+  <app-page-header
+    eyebrow="Cuenta"
+    title="Mi cocina"
+    description="Elige la dark kitchen que prepara tus planes. Puedes cambiarla cuando quieras."
+  >
+    <button
+      actions
+      mat-flat-button
+      color="primary"
+      type="submit"
+      form="cocinaForm"
+      [disabled]="saving()"
+    >
+      @if (saving()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" />
+      } @else {
+        Guardar cambios
+      }
+    </button>
+  </app-page-header>
+
+  <form id="cocinaForm" [formGroup]="form" (ngSubmit)="guardar()">
+    <app-card>
+      @if (cocinaActual()) {
+        <p class="text-sm text-muted-foreground mb-4">
+          Cocina actual: <span class="font-medium text-foreground">{{ cocinaActual() }}</span>
+        </p>
+      }
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Cocina</mat-label>
+        <mat-select formControlName="negocioId">
+          @for (c of cocinas(); track c.id) {
+            <mat-option [value]="c.id">{{ c.nombreComercial }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.negocioId.hasError('required') && form.controls.negocioId.touched) {
+          <mat-error>Debes elegir una cocina</mat-error>
+        }
+      </mat-form-field>
+
+      <p class="text-xs text-muted-foreground mt-3">
+        Los planes que ya creaste seguirán en tu cocina anterior; solo los nuevos irán a la
+        cocina que elijas aquí.
+      </p>
+    </app-card>
+  </form>
+</div>

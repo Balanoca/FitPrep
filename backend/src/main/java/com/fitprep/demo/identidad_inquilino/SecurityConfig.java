@@ -43,10 +43,19 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/negocios/publico").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/platos/publico").permitAll()
+                // La receta de un plato es privada del negocio (va antes que la
+                // regla pública de /platos/** para no quedar expuesta por GET).
+                .requestMatchers("/api/v1/platos/*/receta").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/platos/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/platos/**").hasAnyRole("TENANT", "ADMIN")
+                // Catálogo de insumos: privado del negocio.
+                .requestMatchers("/api/v1/insumos/**").hasAnyRole("TENANT", "ADMIN")
+                // Logística (producción y lista de compra): privado del negocio.
+                .requestMatchers("/api/v1/logistica/**").hasAnyRole("TENANT", "ADMIN")
                 // Listar TODOS los pedidos del negocio: solo TENANT/ADMIN.
                 .requestMatchers(HttpMethod.GET, "/api/v1/planes").hasAnyRole("TENANT", "ADMIN")
                 .requestMatchers("/api/v1/planes/**").authenticated()

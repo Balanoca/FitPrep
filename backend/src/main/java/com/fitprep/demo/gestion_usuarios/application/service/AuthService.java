@@ -5,7 +5,6 @@ import com.fitprep.demo.gestion_usuarios.domain.model.PasswordHasher;
 import com.fitprep.demo.gestion_usuarios.domain.model.Usuario;
 import com.fitprep.demo.gestion_usuarios.domain.port.in.AutenticacionUseCase;
 import com.fitprep.demo.gestion_usuarios.domain.port.out.NegocioRepositoryPort;
-import com.fitprep.demo.gestion_usuarios.domain.port.out.TenantProviderPort;
 import com.fitprep.demo.gestion_usuarios.domain.port.out.TokenGeneratorPort;
 import com.fitprep.demo.gestion_usuarios.domain.port.out.UsuarioRepositoryPort;
 import org.springframework.stereotype.Service;
@@ -25,24 +24,23 @@ public class AuthService implements AutenticacionUseCase {
     private final NegocioRepositoryPort negocioRepository;
     private final TokenGeneratorPort tokenGenerator;
     private final PasswordHasher passwordHasher;
-    private final TenantProviderPort tenantProvider;
 
     public AuthService(UsuarioRepositoryPort usuarioRepository,
                        NegocioRepositoryPort negocioRepository,
                        TokenGeneratorPort tokenGenerator,
-                       PasswordHasher passwordHasher,
-                       TenantProviderPort tenantProvider) {
+                       PasswordHasher passwordHasher) {
         this.usuarioRepository = usuarioRepository;
         this.negocioRepository = negocioRepository;
         this.tokenGenerator = tokenGenerator;
         this.passwordHasher = passwordHasher;
-        this.tenantProvider = tenantProvider;
     }
 
     @Override
     @Transactional
     public ResultadoLogin login(String email, String password) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        // Login público: el contexto aún no tiene el tenant del usuario, así que se
+        // busca el email globalmente. El token resultante lleva su negocioId.
+        Usuario usuario = usuarioRepository.findByEmailGlobal(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con email: " + email));
 
         if (!usuario.passwordCoincide(password, passwordHasher)) {
@@ -61,13 +59,14 @@ public class AuthService implements AutenticacionUseCase {
     @Override
     @Transactional
     public Usuario registrarUsuario(RegistroUsuarioCommand command, String rol) {
-        if (usuarioRepository.findByEmail(command.email()).isPresent()) {
-            throw new IllegalArgumentException("El email ya está registrado: " + command.email());
-        }
+        // Opción B: el deportista elige su cocina al registrarse. La cocina debe
+        // existir y estar activa; no hay asignación por defecto silenciosa.
+        Integer negocioId = resolverCocinaActiva(command.negocioId());
 
-        Integer negocioId = tenantProvider.currentTenantId();
-        if (negocioId == null) {
-            negocioId = 1;
+        // El email es único global (entre todas las cocinas), por eso se comprueba
+        // sin filtro de tenant.
+        if (usuarioRepository.existsByEmailGlobal(command.email())) {
+            throw new IllegalArgumentException("El email ya está registrado: " + command.email());
         }
 
         Usuario usuario = Usuario.builder()
@@ -84,7 +83,8 @@ public class AuthService implements AutenticacionUseCase {
                 .reqGrasasG(command.reqGrasasG())
                 .build();
 
-        return usuarioRepository.save(usuario);
+        // Registro cross-tenant: se inserta con SQL directo (ver puerto).
+        return usuarioRepository.insertarEnCocina(usuario);
     }
 
     @Override
@@ -124,5 +124,44 @@ public class AuthService implements AutenticacionUseCase {
                 command.reqGrasasG());
 
         return usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public List<Negocio> listarCocinasPublicas() {
+        return negocioRepository.findAllActivos();
+    }
+
+    @Override
+    @Transactional
+    public Usuario cambiarCocina(String email, Integer negocioId) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Perfil no encontrado para el usuario: " + email));
+
+        Integer destino = resolverCocinaActiva(negocioId);
+
+        // Los planes ya creados conservan su negocio_id original (no se migran):
+        // la cocina anterior sigue viendo los pedidos que aceptó. Solo cambia el
+        // destino de los nuevos planes. Se usa UPDATE nativo porque negocio_id
+        // (@TenantId) es inmutable a través de la entidad JPA.
+        usuarioRepository.reasignarCocina(usuario.getId(), destino);
+        usuario.setNegocioId(destino);
+
+        return usuario;
+    }
+
+    /**
+     * Valida que el id corresponda a una cocina existente y activa. Lanza
+     * IllegalArgumentException si falta o no es válida (sin asignación por defecto).
+     */
+    private Integer resolverCocinaActiva(Integer negocioId) {
+        if (negocioId == null) {
+            throw new IllegalArgumentException("Debes elegir una cocina.");
+        }
+        Negocio negocio = negocioRepository.findById(negocioId.longValue())
+                .orElseThrow(() -> new IllegalArgumentException("La cocina seleccionada no existe."));
+        if (!"ACTIVO".equalsIgnoreCase(negocio.getEstado())) {
+            throw new IllegalArgumentException("La cocina seleccionada no está disponible.");
+        }
+        return negocioId;
     }
 }

@@ -33,6 +33,15 @@ public class PlatoController {
         return ResponseEntity.ok(response);
     }
 
+    /** Catálogo público de una cocina concreta (para elegir antes de registrarse). */
+    @GetMapping("/publico")
+    public ResponseEntity<List<PlatoResponse>> listarPublicos(@RequestParam Integer negocioId) {
+        List<PlatoResponse> response = gestionarPlato.listarDisponiblesPorCocina(negocioId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PlatoResponse> obtenerPlato(@PathVariable Long id) {
         return gestionarPlato.obtenerPorId(id)

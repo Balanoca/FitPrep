@@ -4,6 +4,7 @@ import com.fitprep.demo.gestion_usuarios.domain.model.Negocio;
 import com.fitprep.demo.gestion_usuarios.domain.port.out.NegocioRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -23,6 +24,13 @@ public class NegocioPersistenceAdapter implements NegocioRepositoryPort {
     @Override
     public Optional<Negocio> findBySlug(String slug) {
         return jpaRepository.findBySlug(slug).map(NegocioMapper::toDomain);
+    }
+
+    @Override
+    public List<Negocio> findAllActivos() {
+        return jpaRepository.findByEstadoOrderByNombreComercialAsc("ACTIVO").stream()
+                .map(NegocioMapper::toDomain)
+                .toList();
     }
 
     @Override

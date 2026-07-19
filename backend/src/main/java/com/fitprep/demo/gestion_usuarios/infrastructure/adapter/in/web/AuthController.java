@@ -41,6 +41,7 @@ public class AuthController {
     public ResponseEntity<?> registrarDeportista(@RequestBody RegisterDeportistaRequest request) {
         try {
             RegistroUsuarioCommand command = new RegistroUsuarioCommand(
+                    request.getNegocioId(),
                     request.getNombres(),
                     request.getApellidos(),
                     request.getEmail(),
@@ -107,6 +108,20 @@ public class AuthController {
             return ResponseEntity.ok(mapToAuthResponse(actualizado, null));
         } catch (IllegalArgumentException e) {
             return errorBody("Datos no válidos", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/mi-cocina")
+    public ResponseEntity<?> cambiarMiCocina(@RequestBody CambiarCocinaRequest request) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (email == null || "anonymousUser".equals(email)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+        try {
+            Usuario actualizado = autenticacion.cambiarCocina(email, request.getNegocioId());
+            return ResponseEntity.ok(mapToAuthResponse(actualizado, null));
+        } catch (IllegalArgumentException e) {
+            return errorBody("No se pudo cambiar de cocina", e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

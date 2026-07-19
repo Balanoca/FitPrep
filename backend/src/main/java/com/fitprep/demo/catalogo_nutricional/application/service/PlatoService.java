@@ -29,6 +29,11 @@ public class PlatoService implements GestionarPlatoUseCase {
     }
 
     @Override
+    public List<Plato> listarDisponiblesPorCocina(Integer negocioId) {
+        return platoRepository.findDisponiblesByNegocioId(negocioId);
+    }
+
+    @Override
     public Optional<Plato> obtenerPorId(Long id) {
         return platoRepository.findById(id);
     }

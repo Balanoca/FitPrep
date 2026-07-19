@@ -47,6 +47,46 @@
       @if (modo() === 'atleta') {
         <!-- Registro de atleta -->
         <form [formGroup]="atletaForm" (ngSubmit)="registrarAtleta()" class="space-y-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Elige tu cocina</mat-label>
+            <mat-select
+              formControlName="negocioId"
+              (selectionChange)="onCocinaChange($event.value)"
+            >
+              @for (c of cocinas(); track c.id) {
+                <mat-option [value]="c.id">{{ c.nombreComercial }}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Es la dark kitchen que preparará tus platos.</mat-hint>
+            @if (atletaForm.controls.negocioId.hasError('required') && atletaForm.controls.negocioId.touched) {
+              <mat-error>Debes elegir una cocina</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Preview del catálogo de la cocina elegida -->
+          @if (cargandoPreview()) {
+            <div class="flex items-center gap-2 text-xs text-muted-foreground px-1">
+              <mat-progress-spinner diameter="16" mode="indeterminate" />
+              Cargando platos…
+            </div>
+          } @else if (platosPreview().length > 0) {
+            <div class="rounded-lg border border-black/10 bg-black/[0.02] p-3">
+              <div class="text-[11px] font-semibold uppercase tracking-widest text-brand-600 mb-2">
+                Algunos platos de esta cocina
+              </div>
+              <ul class="space-y-1.5">
+                @for (p of platosPreview(); track p.id) {
+                  <li class="flex items-center justify-between text-sm">
+                    <span class="truncate pr-2">{{ p.nombre }}</span>
+                    <span class="shrink-0 text-xs text-muted-foreground">
+                      {{ p.calorias }} kcal · S/ {{ p.precio }}
+                    </span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
           <div class="grid grid-cols-2 gap-3">
             <mat-form-field appearance="outline">
               <mat-label>Nombre</mat-label>

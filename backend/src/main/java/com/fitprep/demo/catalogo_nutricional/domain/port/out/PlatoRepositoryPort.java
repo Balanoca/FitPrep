@@ -13,6 +13,13 @@ public interface PlatoRepositoryPort {
 
     List<Plato> findAll();
 
+    /**
+     * Platos disponibles de una cocina concreta, ignorando el tenant del
+     * contexto. Para el catálogo público que un visitante consulta antes de
+     * elegir cocina.
+     */
+    List<Plato> findDisponiblesByNegocioId(Integer negocioId);
+
     Optional<Plato> findById(Long id);
 
     Plato save(Plato plato);

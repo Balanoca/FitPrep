@@ -11,6 +11,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AuthService } from '../../../core/auth/auth.service';
+import { CocinaPublica } from '../../../core/models/user.model';
+import { NegocioService } from '../../negocio/data/negocio.service';
+import { PlatoService } from '../../catalogo/data/plato.service';
+import { Plato } from '../../catalogo/data/plato.model';
 
 type Modo = 'atleta' | 'negocio';
 
@@ -34,12 +38,19 @@ type Modo = 'atleta' | 'negocio';
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly negocioService = inject(NegocioService);
+  private readonly platoService = inject(PlatoService);
   private readonly router = inject(Router);
   private readonly snackbar = inject(MatSnackBar);
 
   readonly modo = signal<Modo>('atleta');
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+
+  /** Cocinas disponibles para elegir + preview de su catálogo. */
+  readonly cocinas = signal<CocinaPublica[]>([]);
+  readonly platosPreview = signal<Plato[]>([]);
+  readonly cargandoPreview = signal(false);
 
   readonly objetivos = [
     { value: 'PERDIDA_GRASA', label: 'Pérdida de grasa' },
@@ -48,6 +59,7 @@ export class RegisterComponent {
   ];
 
   readonly atletaForm = this.fb.nonNullable.group({
+    negocioId: [null as number | null, Validators.required],
     nombres: ['', Validators.required],
     apellidos: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -55,6 +67,29 @@ export class RegisterComponent {
     objetivoFitness: ['PERDIDA_GRASA'],
     requerimientoKcal: [null as number | null],
   });
+
+  constructor() {
+    this.negocioService.listarPublicas().subscribe({
+      next: (cocinas) => this.cocinas.set(cocinas),
+      error: () => this.error.set('No se pudieron cargar las cocinas disponibles.'),
+    });
+  }
+
+  /** Al elegir cocina, carga un preview de sus platos disponibles. */
+  onCocinaChange(negocioId: number): void {
+    this.platosPreview.set([]);
+    if (!negocioId) {
+      return;
+    }
+    this.cargandoPreview.set(true);
+    this.platoService.listarPublicos(negocioId).subscribe({
+      next: (platos) => {
+        this.platosPreview.set(platos);
+        this.cargandoPreview.set(false);
+      },
+      error: () => this.cargandoPreview.set(false),
+    });
+  }
 
   readonly negocioForm = this.fb.nonNullable.group({
     nombreComercial: ['', Validators.required],
@@ -76,7 +111,8 @@ export class RegisterComponent {
     this.loading.set(true);
     this.error.set(null);
 
-    this.auth.registrarDeportista(this.atletaForm.getRawValue()).subscribe({
+    const { negocioId, ...resto } = this.atletaForm.getRawValue();
+    this.auth.registrarDeportista({ ...resto, negocioId: negocioId! }).subscribe({
       next: (res) => {
         this.loading.set(false);
         this.router.navigateByUrl(this.auth.homeForRole(res.rol));

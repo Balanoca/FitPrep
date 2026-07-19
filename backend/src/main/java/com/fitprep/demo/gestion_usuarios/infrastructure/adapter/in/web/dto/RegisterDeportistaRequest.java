@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class RegisterDeportistaRequest {
+    private Integer negocioId;
     private String nombres;
     private String apellidos;
     private String email;
